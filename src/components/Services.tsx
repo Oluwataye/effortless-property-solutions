@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Building2, Home, Key, Construction, DollarSign, ChevronDown } from "lucide-react";
+import { Building2, Home, Key, Construction, DollarSign } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -65,15 +65,24 @@ const Services = () => {
           <p className="text-xl text-gray-600 mb-8">I am looking for</p>
           
           <Select onValueChange={setSelectedCategory} value={selectedCategory}>
-            <SelectTrigger className="w-full max-w-md mx-auto text-xl border-b-2 border-red-600 rounded-none bg-transparent hover:bg-gray-50 transition-colors">
+            <SelectTrigger 
+              className="w-full max-w-md mx-auto text-xl border-b-2 border-red-600 
+                rounded-none bg-transparent hover:bg-gray-50 transition-colors
+                focus:ring-0 focus:ring-offset-0 focus:border-red-700"
+            >
               <SelectValue placeholder="Select a service" />
             </SelectTrigger>
-            <SelectContent className="w-full max-w-md">
+            <SelectContent 
+              className="w-full max-w-md bg-white border border-gray-200 shadow-lg
+                rounded-sm mt-1 overflow-hidden"
+            >
               {services.map((serviceCategory) => (
                 <SelectItem 
                   key={serviceCategory.category} 
                   value={serviceCategory.category}
-                  className="text-lg py-3 hover:bg-gray-50"
+                  className="text-lg py-4 px-6 hover:bg-gray-50 cursor-pointer
+                    border-b border-gray-100 last:border-b-0
+                    transition-colors duration-200 ease-in-out"
                 >
                   {serviceCategory.category}
                 </SelectItem>
@@ -91,7 +100,8 @@ const Services = () => {
                   key={service.title}
                   className={cn(
                     "hover:shadow-lg transition-shadow duration-300",
-                    "transform hover:-translate-y-1 transition-transform"
+                    "transform hover:-translate-y-1 transition-transform",
+                    "border-none shadow-md"
                   )}
                 >
                   <CardHeader>
