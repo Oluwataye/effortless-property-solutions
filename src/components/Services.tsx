@@ -13,37 +13,50 @@ import { cn } from "@/lib/utils";
 const services = [
   {
     category: "Property Management",
-    items: [
-      {
-        title: "Facility Management",
-        description: "Comprehensive facility management solutions for your properties",
-        icon: Building2,
-      },
-      {
-        title: "Real Estate Management",
-        description: "Professional property management services",
-        icon: Home,
-      }
+    description: "Comprehensive property management services to maximize your real estate investments.",
+    icon: Building2,
+    image: "/lovable-uploads/5c944f9a-23a7-479d-8494-6f07c372cd0d.png",
+    features: [
+      "Tenant screening and management",
+      "Property maintenance and repairs",
+      "Rent collection and financial reporting",
+      "24/7 emergency response"
+    ]
+  },
+  {
+    category: "Facility Management",
+    description: "Efficient facility management to ensure smooth operations of your properties.",
+    icon: Home,
+    image: "/lovable-uploads/f7b9ebcd-345d-43ea-8ac9-200074af138c.png",
+    features: [
+      "Building maintenance",
+      "Cleaning services",
+      "Security management",
+      "Utilities management"
     ]
   },
   {
     category: "Project Management",
-    items: [
-      {
-        title: "Property Buying",
-        description: "Expert guidance in property acquisition",
-        icon: Key,
-      },
-      {
-        title: "Property Development",
-        description: "End-to-end property development services",
-        icon: Construction,
-      },
-      {
-        title: "Property Selling",
-        description: "Strategic property marketing and sales",
-        icon: DollarSign,
-      }
+    description: "Expert project management for successful real estate development and renovations.",
+    icon: Construction,
+    image: "/lovable-uploads/98efad21-72d2-4b1d-aabd-67bf3fdb4c01.png",
+    features: [
+      "Construction oversight",
+      "Timeline coordination",
+      "Budget management",
+      "Quality control"
+    ]
+  },
+  {
+    category: "Property Development & Sales",
+    description: "End-to-end property development and sales services for optimal returns.",
+    icon: DollarSign,
+    image: "/lovable-uploads/9adb1b79-3d06-43d3-88d9-6b64bb21dead.png",
+    features: [
+      "Property acquisition",
+      "Construction management",
+      "Development planning",
+      "Sales and marketing"
     ]
   }
 ];
@@ -76,15 +89,15 @@ const Services = () => {
               className="w-full max-w-md bg-white border border-gray-200 shadow-lg
                 rounded-sm mt-1 overflow-hidden"
             >
-              {services.map((serviceCategory) => (
+              {services.map((service) => (
                 <SelectItem 
-                  key={serviceCategory.category} 
-                  value={serviceCategory.category}
+                  key={service.category} 
+                  value={service.category}
                   className="text-lg py-4 px-6 hover:bg-gray-50 cursor-pointer
                     border-b border-gray-100 last:border-b-0
                     transition-colors duration-200 ease-in-out"
                 >
-                  {serviceCategory.category}
+                  {service.category}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -92,28 +105,36 @@ const Services = () => {
         </div>
 
         {selectedCategory && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in">
+          <div className="animate-fade-in">
             {services
-              .find(cat => cat.category === selectedCategory)
-              ?.items.map((service) => (
-                <Card
-                  key={service.title}
-                  className={cn(
-                    "hover:shadow-lg transition-shadow duration-300",
-                    "transform hover:-translate-y-1 transition-transform",
-                    "border-none shadow-md"
-                  )}
-                >
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <service.icon className="h-6 w-6 text-red-600" />
-                      {service.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-secondary">{service.description}</p>
-                  </CardContent>
-                </Card>
+              .filter(service => service.category === selectedCategory)
+              .map((service) => (
+                <div key={service.category} className="max-w-4xl mx-auto">
+                  <div className="flex flex-col md:flex-row items-start gap-8 mb-8">
+                    <div className="w-full md:w-1/2">
+                      <h3 className="text-2xl font-bold text-gray-700 mb-4 flex items-center gap-2">
+                        <service.icon className="h-6 w-6 text-red-600" />
+                        {service.category}
+                      </h3>
+                      <p className="text-gray-600 mb-6">{service.description}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {service.features.map((feature, index) => (
+                          <div key={index} className="flex items-center gap-2 text-gray-600">
+                            <div className="w-2 h-2 bg-red-600 rounded-full" />
+                            {feature}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="w-full md:w-1/2">
+                      <img 
+                        src={service.image} 
+                        alt={`${service.category} illustration`}
+                        className="w-full h-auto rounded-lg shadow-md"
+                      />
+                    </div>
+                  </div>
+                </div>
               ))}
           </div>
         )}
