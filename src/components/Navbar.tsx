@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, X, Search, Building2, Home, Construction, DollarSign } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
@@ -8,11 +8,11 @@ const Navbar = () => {
   const location = useLocation();
 
   const navItems = [
-    { name: "Home", path: "/", icon: Home },
-    { name: "About", path: "/about", icon: Building2 },
-    { name: "Services", path: "/services", icon: Construction },
-    { name: "Projects", path: "/portfolio", icon: DollarSign },
-    { name: "Contact", path: "/contact", icon: Building2 },
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Services", path: "/services" },
+    { name: "Projects", path: "/portfolio" },
+    { name: "Contact", path: "/contact" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -27,23 +27,19 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className={`flex items-center space-x-2 group ${
-                    isActive(item.path)
-                      ? "text-primary"
-                      : "text-secondary-dark hover:text-primary"
-                  } transition-colors`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{item.name}</span>
-                </Link>
-              );
-            })}
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`${
+                  isActive(item.path)
+                    ? "text-primary"
+                    : "text-secondary-dark hover:text-primary"
+                } transition-colors`}
+              >
+                <span>{item.name}</span>
+              </Link>
+            ))}
             
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -80,24 +76,20 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden pb-4 animate-slide-down">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className={`flex items-center space-x-2 py-2 ${
-                    isActive(item.path)
-                      ? "text-primary"
-                      : "text-secondary-dark hover:text-primary"
-                  } transition-colors`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{item.name}</span>
-                </Link>
-              );
-            })}
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`block py-2 ${
+                  isActive(item.path)
+                    ? "text-primary"
+                    : "text-secondary-dark hover:text-primary"
+                } transition-colors`}
+                onClick={() => setIsOpen(false)}
+              >
+                <span>{item.name}</span>
+              </Link>
+            ))}
           </div>
         )}
       </div>
