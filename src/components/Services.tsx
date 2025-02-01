@@ -15,7 +15,7 @@ const services = [
     category: "Property Management",
     description: "Comprehensive property management services to maximize your real estate investments.",
     icon: Building2,
-    image: "/lovable-uploads/5c944f9a-23a7-479d-8494-6f07c372cd0d.png",
+    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80",
     features: [
       "Tenant screening and management",
       "Property maintenance and repairs",
@@ -27,7 +27,7 @@ const services = [
     category: "Facility Management",
     description: "Efficient facility management to ensure smooth operations of your properties.",
     icon: Home,
-    image: "/lovable-uploads/f7b9ebcd-345d-43ea-8ac9-200074af138c.png",
+    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80",
     features: [
       "Building maintenance",
       "Cleaning services",
@@ -39,7 +39,7 @@ const services = [
     category: "Project Management",
     description: "Expert project management for successful real estate development and renovations.",
     icon: Construction,
-    image: "/lovable-uploads/98efad21-72d2-4b1d-aabd-67bf3fdb4c01.png",
+    image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80",
     features: [
       "Construction oversight",
       "Timeline coordination",
@@ -51,7 +51,7 @@ const services = [
     category: "Property Development & Sales",
     description: "End-to-end property development and sales services for optimal returns.",
     icon: DollarSign,
-    image: "/lovable-uploads/9adb1b79-3d06-43d3-88d9-6b64bb21dead.png",
+    image: "https://images.unsplash.com/photo-1496307653780-42ee777d4833?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80",
     features: [
       "Property acquisition",
       "Construction management",
