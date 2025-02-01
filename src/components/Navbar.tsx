@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
   const navItems = [
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
     { name: "Services", path: "/services" },
-    { name: "Projects", path: "/projects" },
+    { name: "Portfolio", path: "/portfolio" },
+    { name: "Blog", path: "/blog" },
     { name: "Contact", path: "/contact" },
   ];
 
@@ -27,7 +29,9 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className="text-secondary-dark hover:text-primary transition-colors"
+                className={`text-secondary-dark hover:text-primary transition-colors ${
+                  location.pathname === item.path ? "text-primary font-semibold" : ""
+                }`}
               >
                 {item.name}
               </Link>
@@ -51,7 +55,9 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className="block py-2 text-secondary-dark hover:text-primary transition-colors"
+                className={`block py-2 text-secondary-dark hover:text-primary transition-colors ${
+                  location.pathname === item.path ? "text-primary font-semibold" : ""
+                }`}
                 onClick={() => setIsOpen(false)}
               >
                 {item.name}
