@@ -4,6 +4,8 @@ import Services from "@/components/Services";
 import HomeSection from "@/components/HomeSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import NewsSection from "@/components/NewsSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
@@ -29,6 +31,8 @@ const Index = () => {
         </div>
       </HomeSection>
 
+      <TestimonialsSection />
+
       <HomeSection title="Latest News">
         <NewsSection />
         <div className="text-center mt-12">
@@ -51,6 +55,8 @@ const Index = () => {
           </Link>
         </Button>
       </HomeSection>
+
+      <Footer />
     </div>
   );
 };
