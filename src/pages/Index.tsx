@@ -1,7 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
-import HomeNavigation from "@/components/HomeNavigation";
 
 const Index = () => {
   return (
@@ -9,7 +8,6 @@ const Index = () => {
       <Navbar />
       <Hero />
       <Services />
-      <HomeNavigation />
     </div>
   );
 };

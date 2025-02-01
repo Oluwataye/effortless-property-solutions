@@ -1,9 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-primary">
       <div
@@ -24,7 +21,6 @@ const Hero = () => {
         <Button
           size="lg"
           className="bg-white text-primary hover:bg-accent animate-slide-in"
-          onClick={() => navigate('/services')}
         >
           Explore Our Services
         </Button>
