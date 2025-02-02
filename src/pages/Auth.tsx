@@ -28,8 +28,9 @@ const Auth = () => {
 
       toast({
         title: "Success!",
-        description: "Please check your email for the confirmation link.",
+        description: "You have successfully signed up.",
       });
+      navigate("/");
     } catch (error: any) {
       toast({
         title: "Error",
