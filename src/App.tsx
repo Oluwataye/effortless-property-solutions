@@ -13,6 +13,9 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminLogin from "./pages/admin/Login";
+import AdminProperties from "./pages/admin/Properties";
+import AdminInquiries from "./pages/admin/Inquiries";
+import AdminBlogPosts from "./pages/admin/BlogPosts";
 import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
@@ -35,6 +38,9 @@ const App = () => {
               <Route path="/auth" element={<Auth />} />
               <Route path="/admin">
                 <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="properties" element={<AdminProperties />} />
+                <Route path="inquiries" element={<AdminInquiries />} />
+                <Route path="blog" element={<AdminBlogPosts />} />
                 <Route path="login" element={<AdminLogin />} />
               </Route>
               <Route path="*" element={<NotFound />} />
