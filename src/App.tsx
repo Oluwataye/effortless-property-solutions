@@ -33,8 +33,10 @@ const App = () => {
               <Route path="/blog" element={<Blog />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin">
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="login" element={<AdminLogin />} />
+              </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

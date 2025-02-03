@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
+import { Lock } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -26,6 +27,16 @@ const Login = () => {
       if (error) throw error;
 
       if (data.session) {
+        // Check if user has admin role
+        const { data: roleData, error: roleError } = await supabase
+          .rpc('has_role', { role: 'admin' });
+
+        if (roleError) throw roleError;
+
+        if (!roleData) {
+          throw new Error("Access denied. Admin privileges required.");
+        }
+
         navigate("/admin/dashboard");
         toast({
           title: "Welcome back!",
@@ -46,7 +57,10 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <Card className="w-full max-w-md">
-        <CardHeader>
+        <CardHeader className="space-y-1">
+          <div className="flex items-center justify-center mb-4">
+            <Lock className="h-12 w-12 text-primary" />
+          </div>
           <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
         </CardHeader>
         <CardContent>
@@ -74,7 +88,7 @@ const Login = () => {
               className="w-full"
               disabled={loading}
             >
-              {loading ? "Loading..." : "Login"}
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
         </CardContent>

@@ -1,81 +1,102 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Users, FileText, Settings } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { Building2, Users, MessageSquare, FileText } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import AdminLayout from "@/components/admin/AdminLayout";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [stats, setStats] = useState({
+    properties: 0,
+    inquiries: 0,
+    blogPosts: 0
+  });
 
   useEffect(() => {
-    checkUser();
+    fetchStats();
   }, []);
 
-  const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/admin/login");
+  const fetchStats = async () => {
+    try {
+      // Fetch properties count
+      const { count: propertiesCount } = await supabase
+        .from('properties')
+        .select('*', { count: 'exact', head: true });
+
+      // Fetch inquiries count
+      const { count: inquiriesCount } = await supabase
+        .from('inquiries')
+        .select('*', { count: 'exact', head: true });
+
+      // Fetch blog posts count
+      const { count: blogPostsCount } = await supabase
+        .from('blog_posts')
+        .select('*', { count: 'exact', head: true });
+
+      setStats({
+        properties: propertiesCount || 0,
+        inquiries: inquiriesCount || 0,
+        blogPosts: blogPostsCount || 0
+      });
+    } catch (error: any) {
       toast({
-        title: "Access Denied",
-        description: "Please login to access the admin dashboard",
+        title: "Error",
+        description: "Failed to fetch dashboard statistics",
         variant: "destructive",
       });
     }
   };
 
-  const stats = [
+  const dashboardItems = [
     {
       title: "Properties",
-      value: "23",
+      value: stats.properties,
       icon: Building2,
       link: "/admin/properties"
     },
     {
-      title: "Users",
-      value: "142",
-      icon: Users,
-      link: "/admin/users"
+      title: "Inquiries",
+      value: stats.inquiries,
+      icon: MessageSquare,
+      link: "/admin/inquiries"
     },
     {
-      title: "Services",
-      value: "8",
+      title: "Blog Posts",
+      value: stats.blogPosts,
       icon: FileText,
-      link: "/admin/services"
-    },
-    {
-      title: "Settings",
-      value: "",
-      icon: Settings,
-      link: "/admin/settings"
+      link: "/admin/blog"
     }
   ];
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <Card 
-            key={stat.title}
-            className="hover:shadow-lg transition-shadow cursor-pointer"
-            onClick={() => navigate(stat.link)}
-          >
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-            </CardContent>
-          </Card>
-        ))}
+    <AdminLayout>
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {dashboardItems.map((item) => (
+            <Card 
+              key={item.title}
+              className="hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => navigate(item.link)}
+            >
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {item.title}
+                </CardTitle>
+                <item.icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{item.value}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 
