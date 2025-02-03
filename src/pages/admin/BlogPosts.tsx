@@ -27,16 +27,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Edit, Trash } from "lucide-react";
+import { Plus, Edit, Trash, Image } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadImage } from "@/utils/uploadUtils";
 
 const BlogPosts = () => {
   const { toast } = useToast();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     content: "",
     status: "draft",
+    tags: [] as string[],
   });
 
   const { data: posts, refetch } = useQuery({
@@ -52,15 +55,27 @@ const BlogPosts = () => {
     },
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      let featuredImage = null;
+      if (selectedImage) {
+        featuredImage = await uploadImage(selectedImage, "blog_images");
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       
       const { error } = await supabase.from("blog_posts").insert([
         {
           ...formData,
           author_id: user?.id,
+          featured_image: featuredImage,
         },
       ]);
 
@@ -71,6 +86,7 @@ const BlogPosts = () => {
         description: "Blog post added successfully",
       });
       setIsAddDialogOpen(false);
+      setSelectedImage(null);
       refetch();
     } catch (error: any) {
       toast({
@@ -104,27 +120,9 @@ const BlogPosts = () => {
     }
   };
 
-  const handleStatusChange = async (id: string, status: string) => {
-    try {
-      const { error } = await supabase
-        .from("blog_posts")
-        .update({ status })
-        .match({ id });
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Blog post status updated successfully",
-      });
-      refetch();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
+  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const tags = e.target.value.split(",").map((tag) => tag.trim());
+    setFormData({ ...formData, tags });
   };
 
   return (
@@ -139,7 +137,7 @@ const BlogPosts = () => {
                 Add Post
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Add New Blog Post</DialogTitle>
               </DialogHeader>
@@ -161,6 +159,10 @@ const BlogPosts = () => {
                   required
                   className="min-h-[200px]"
                 />
+                <Input
+                  placeholder="Tags (comma-separated)"
+                  onChange={handleTagsChange}
+                />
                 <Select
                   value={formData.status}
                   onValueChange={(value) =>
@@ -175,6 +177,17 @@ const BlogPosts = () => {
                     <SelectItem value="published">Published</SelectItem>
                   </SelectContent>
                 </Select>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Featured Image
+                  </label>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="cursor-pointer"
+                  />
+                </div>
                 <Button type="submit" className="w-full">
                   Add Post
                 </Button>
@@ -187,9 +200,9 @@ const BlogPosts = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
-              <TableHead>Content</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
+              <TableHead>Tags</TableHead>
+              <TableHead>Created At</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -197,20 +210,16 @@ const BlogPosts = () => {
             {posts?.map((post) => (
               <TableRow key={post.id}>
                 <TableCell>{post.title}</TableCell>
-                <TableCell className="max-w-xs truncate">{post.content}</TableCell>
+                <TableCell className="capitalize">{post.status}</TableCell>
                 <TableCell>
-                  <Select
-                    value={post.status}
-                    onValueChange={(value) => handleStatusChange(post.id, value)}
-                  >
-                    <SelectTrigger className="w-32">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="published">Published</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  {post.tags?.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="inline-block bg-gray-100 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </TableCell>
                 <TableCell>
                   {new Date(post.created_at).toLocaleDateString()}

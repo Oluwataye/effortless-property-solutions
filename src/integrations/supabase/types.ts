@@ -14,8 +14,10 @@ export type Database = {
           author_id: string | null
           content: string
           created_at: string | null
+          featured_image: string | null
           id: string
           status: string | null
+          tags: string[] | null
           title: string
           updated_at: string | null
         }
@@ -23,8 +25,10 @@ export type Database = {
           author_id?: string | null
           content: string
           created_at?: string | null
+          featured_image?: string | null
           id?: string
           status?: string | null
+          tags?: string[] | null
           title: string
           updated_at?: string | null
         }
@@ -32,8 +36,10 @@ export type Database = {
           author_id?: string | null
           content?: string
           created_at?: string | null
+          featured_image?: string | null
           id?: string
           status?: string | null
+          tags?: string[] | null
           title?: string
           updated_at?: string | null
         }
@@ -109,10 +115,12 @@ export type Database = {
           area: number | null
           bathrooms: number | null
           bedrooms: number | null
+          category: string | null
           created_at: string | null
           created_by: string | null
           description: string | null
           id: string
+          image_urls: string[] | null
           location: string | null
           price: number | null
           status: string | null
@@ -123,10 +131,12 @@ export type Database = {
           area?: number | null
           bathrooms?: number | null
           bedrooms?: number | null
+          category?: string | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
           id?: string
+          image_urls?: string[] | null
           location?: string | null
           price?: number | null
           status?: string | null
@@ -137,10 +147,12 @@ export type Database = {
           area?: number | null
           bathrooms?: number | null
           bedrooms?: number | null
+          category?: string | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
           id?: string
+          image_urls?: string[] | null
           location?: string | null
           price?: number | null
           status?: string | null
