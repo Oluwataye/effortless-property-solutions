@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Building2,
   Users,
@@ -19,7 +20,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [stats, setStats] = useState({
+  const [dashboardStats, setDashboardStats] = useState({
     properties: 0,
     inquiries: 0,
     blogPosts: 0,
@@ -55,7 +56,7 @@ const Dashboard = () => {
         .order('created_at', { ascending: false })
         .limit(5);
 
-      setStats({
+      setDashboardStats({
         properties: propertiesCount || 0,
         inquiries: inquiriesCount || 0,
         blogPosts: blogPostsCount || 0,
@@ -98,28 +99,28 @@ const Dashboard = () => {
     },
   ];
 
-  const stats = [
+  const statCards = [
     {
       title: "Properties",
-      value: stats.properties,
+      value: dashboardStats.properties,
       icon: Building2,
       path: "/admin/properties",
     },
     {
       title: "Inquiries",
-      value: stats.inquiries,
+      value: dashboardStats.inquiries,
       icon: MessageSquare,
       path: "/admin/inquiries",
     },
     {
       title: "Blog Posts",
-      value: stats.blogPosts,
+      value: dashboardStats.blogPosts,
       icon: FileText,
       path: "/admin/blog",
     },
     {
       title: "Testimonials",
-      value: stats.testimonials,
+      value: dashboardStats.testimonials,
       icon: Star,
       path: "/admin/testimonials",
     },
@@ -155,7 +156,7 @@ const Dashboard = () => {
         <div>
           <h2 className="text-xl font-semibold mb-4">Statistics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map((stat) => (
+            {statCards.map((stat) => (
               <Card
                 key={stat.title}
                 className="hover:shadow-lg transition-shadow cursor-pointer"
@@ -181,7 +182,7 @@ const Dashboard = () => {
           <Card>
             <CardContent className="p-6">
               <div className="space-y-4">
-                {stats.recentActivities.map((activity: any) => (
+                {dashboardStats.recentActivities.map((activity: any) => (
                   <div
                     key={activity.id}
                     className="flex items-center justify-between py-2 border-b last:border-0"
