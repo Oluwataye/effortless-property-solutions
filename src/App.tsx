@@ -16,6 +16,14 @@ import AdminLogin from "./pages/admin/Login";
 import AdminProperties from "./pages/admin/Properties";
 import AdminInquiries from "./pages/admin/Inquiries";
 import AdminBlogPosts from "./pages/admin/BlogPosts";
+import AdminTestimonials from "./pages/admin/Testimonials";
+import AdminNews from "./pages/admin/News";
+import AdminServices from "./pages/admin/Services";
+import AdminProjects from "./pages/admin/Projects";
+import AdminContact from "./pages/admin/Contact";
+import AdminMedia from "./pages/admin/Media";
+import AdminUsers from "./pages/admin/Users";
+import AdminSettings from "./pages/admin/Settings";
 import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
@@ -41,6 +49,14 @@ const App = () => {
                 <Route path="properties" element={<AdminProperties />} />
                 <Route path="inquiries" element={<AdminInquiries />} />
                 <Route path="blog" element={<AdminBlogPosts />} />
+                <Route path="testimonials" element={<AdminTestimonials />} />
+                <Route path="news" element={<AdminNews />} />
+                <Route path="services" element={<AdminServices />} />
+                <Route path="projects" element={<AdminProjects />} />
+                <Route path="contact" element={<AdminContact />} />
+                <Route path="media" element={<AdminMedia />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="settings" element={<AdminSettings />} />
                 <Route path="login" element={<AdminLogin />} />
               </Route>
               <Route path="*" element={<NotFound />} />
