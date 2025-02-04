@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 
-const Testimonials = () => {
+const TestimonialsPage = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -12,4 +12,4 @@ const Testimonials = () => {
   );
 };
 
-export default Testimonials;
+export default TestimonialsPage;

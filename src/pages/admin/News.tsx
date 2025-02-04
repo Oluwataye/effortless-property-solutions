@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 
-const News = () => {
+const NewsPage = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -12,4 +12,4 @@ const News = () => {
   );
 };
 
-export default News;
+export default NewsPage;

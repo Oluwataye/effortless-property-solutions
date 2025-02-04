@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 
-const Settings = () => {
+const SettingsPage = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -12,4 +12,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default SettingsPage;

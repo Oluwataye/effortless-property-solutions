@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 
-const Media = () => {
+const MediaPage = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -12,4 +12,4 @@ const Media = () => {
   );
 };
 
-export default Media;
+export default MediaPage;
