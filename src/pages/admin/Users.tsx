@@ -33,7 +33,7 @@ import { UserPlus, Pencil, Trash2, Users } from "lucide-react";
 interface User {
   id: string;
   email: string;
-  role: string;
+  role: "admin" | "editor";
   created_at: string;
 }
 
@@ -42,7 +42,11 @@ const UsersPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newUser, setNewUser] = useState({ email: "", password: "", role: "user" });
+  const [newUser, setNewUser] = useState({ 
+    email: "", 
+    password: "", 
+    role: "editor" as "admin" | "editor" 
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -97,7 +101,10 @@ const UsersPage = () => {
         const { error: roleError } = await supabase
           .from('user_roles')
           .insert([
-            { user_id: data.user.id, role: newUser.role }
+            { 
+              user_id: data.user.id, 
+              role: newUser.role 
+            }
           ]);
 
         if (roleError) throw roleError;
@@ -108,7 +115,7 @@ const UsersPage = () => {
         });
 
         setIsAddDialogOpen(false);
-        setNewUser({ email: "", password: "", role: "user" });
+        setNewUser({ email: "", password: "", role: "editor" });
         fetchUsers();
       }
     } catch (error: any) {
@@ -185,7 +192,9 @@ const UsersPage = () => {
                   <label htmlFor="role">Role</label>
                   <Select
                     value={newUser.role}
-                    onValueChange={(value) => setNewUser({ ...newUser, role: value })}
+                    onValueChange={(value: "admin" | "editor") => 
+                      setNewUser({ ...newUser, role: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select role" />
@@ -193,7 +202,6 @@ const UsersPage = () => {
                     <SelectContent>
                       <SelectItem value="admin">Admin</SelectItem>
                       <SelectItem value="editor">Editor</SelectItem>
-                      <SelectItem value="user">User</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
