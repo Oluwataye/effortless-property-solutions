@@ -54,25 +54,27 @@ const UsersPage = () => {
 
   const fetchUsers = async () => {
     try {
+      // First get all user roles
       const { data: userRoles, error: userRolesError } = await supabase
         .from('user_roles')
         .select(`
           user_id,
           role,
-          users:user_id (
+          profiles:user_id (
             id,
-            email,
+            username,
             created_at
           )
         `);
 
       if (userRolesError) throw userRolesError;
 
+      // Format the data to match our User interface
       const formattedUsers = userRoles.map((ur: any) => ({
-        id: ur.users.id,
-        email: ur.users.email,
+        id: ur.user_id,
+        email: ur.profiles.username, // username in profiles contains the email
         role: ur.role,
-        created_at: ur.users.created_at,
+        created_at: ur.profiles.created_at,
       }));
 
       setUsers(formattedUsers);
@@ -82,6 +84,7 @@ const UsersPage = () => {
         description: "Failed to fetch users",
         variant: "destructive",
       });
+      console.error('Error fetching users:', error);
     } finally {
       setLoading(false);
     }
