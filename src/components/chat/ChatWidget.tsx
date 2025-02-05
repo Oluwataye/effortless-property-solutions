@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { MessageCircle, X, Send, Loader2 } from "lucide-react"
+import { MessageCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import ChatHeader from './ChatHeader'
+import ChatMessages from './ChatMessages'
+import ChatInput from './ChatInput'
 
 interface Message {
   content: string
@@ -60,7 +61,6 @@ const ChatWidget = () => {
     }
 
     if (data) {
-      // Type guard to ensure sender_type is valid
       const validMessages = data.map(msg => ({
         content: msg.content,
         sender_type: validateSenderType(msg.sender_type),
@@ -70,12 +70,11 @@ const ChatWidget = () => {
     }
   }
 
-  // Helper function to validate sender_type
   const validateSenderType = (type: string): 'user' | 'bot' | 'agent' => {
     if (type === 'user' || type === 'bot' || type === 'agent') {
       return type
     }
-    return 'bot' // Default fallback
+    return 'bot'
   }
 
   const createNewConversation = async () => {
@@ -108,12 +107,10 @@ const ChatWidget = () => {
     const userMessage = message.trim()
     setMessage('')
 
-    // Optimistically add user message
     const newUserMessage: Message = { content: userMessage, sender_type: 'user' }
     setMessages(prev => [...prev, newUserMessage])
 
     try {
-      // Store user message in database
       const { error: messageError } = await supabase
         .from('chat_messages')
         .insert([{
@@ -124,7 +121,6 @@ const ChatWidget = () => {
 
       if (messageError) throw messageError
 
-      // Get AI response
       const response = await supabase.functions.invoke('chat', {
         body: { message: userMessage, conversationId }
       })
@@ -134,7 +130,6 @@ const ChatWidget = () => {
       const botMessage: Message = { content: response.data.response, sender_type: 'bot' }
       setMessages(prev => [...prev, botMessage])
 
-      // Store bot message in database
       await supabase
         .from('chat_messages')
         .insert([{
@@ -149,74 +144,37 @@ const ChatWidget = () => {
         description: "Failed to send message",
         variant: "destructive",
       })
-      // Remove the optimistically added message on error
       setMessages(prev => prev.filter(msg => msg !== newUserMessage))
     } finally {
       setIsLoading(false)
     }
   }
 
-  return (
-    <div className="fixed bottom-4 right-4 z-50">
-      {!isOpen ? (
+  if (!isOpen) {
+    return (
+      <div className="fixed bottom-4 right-4 z-50">
         <Button
           onClick={() => setIsOpen(true)}
           className="rounded-full w-12 h-12 p-0"
         >
           <MessageCircle className="h-6 w-6" />
         </Button>
-      ) : (
-        <div className="bg-background rounded-lg shadow-xl w-96 h-[500px] flex flex-col border">
-          <div className="p-4 border-b flex justify-between items-center">
-            <h3 className="font-semibold">Chat Support</h3>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsOpen(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+      </div>
+    )
+  }
 
-          <ScrollArea className="flex-1 p-4">
-            <div className="space-y-4">
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex ${msg.sender_type === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-lg p-3 ${
-                      msg.sender_type === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted'
-                    }`}
-                  >
-                    {msg.content}
-                  </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-          </ScrollArea>
-
-          <form onSubmit={handleSubmit} className="p-4 border-t flex gap-2">
-            <Input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message..."
-              disabled={isLoading}
-            />
-            <Button type="submit" disabled={isLoading} size="icon">
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-            </Button>
-          </form>
-        </div>
-      )}
+  return (
+    <div className="fixed bottom-4 right-4 z-50">
+      <div className="bg-background rounded-lg shadow-xl w-96 h-[500px] flex flex-col border">
+        <ChatHeader onClose={() => setIsOpen(false)} />
+        <ChatMessages messages={messages} messagesEndRef={messagesEndRef} />
+        <ChatInput
+          message={message}
+          isLoading={isLoading}
+          onMessageChange={(e) => setMessage(e.target.value)}
+          onSubmit={handleSubmit}
+        />
+      </div>
     </div>
   )
 }
