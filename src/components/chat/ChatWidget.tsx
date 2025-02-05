@@ -60,8 +60,22 @@ const ChatWidget = () => {
     }
 
     if (data) {
-      setMessages(data)
+      // Type guard to ensure sender_type is valid
+      const validMessages = data.map(msg => ({
+        content: msg.content,
+        sender_type: validateSenderType(msg.sender_type),
+        created_at: msg.created_at
+      }))
+      setMessages(validMessages)
     }
+  }
+
+  // Helper function to validate sender_type
+  const validateSenderType = (type: string): 'user' | 'bot' | 'agent' => {
+    if (type === 'user' || type === 'bot' || type === 'agent') {
+      return type
+    }
+    return 'bot' // Default fallback
   }
 
   const createNewConversation = async () => {
@@ -95,7 +109,7 @@ const ChatWidget = () => {
     setMessage('')
 
     // Optimistically add user message
-    const newUserMessage = { content: userMessage, sender_type: 'user' as const }
+    const newUserMessage: Message = { content: userMessage, sender_type: 'user' }
     setMessages(prev => [...prev, newUserMessage])
 
     try {
@@ -117,7 +131,7 @@ const ChatWidget = () => {
 
       if (response.error) throw response.error
 
-      const botMessage = { content: response.data.response, sender_type: 'bot' as const }
+      const botMessage: Message = { content: response.data.response, sender_type: 'bot' }
       setMessages(prev => [...prev, botMessage])
 
       // Store bot message in database
