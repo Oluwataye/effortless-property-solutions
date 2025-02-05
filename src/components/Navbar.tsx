@@ -1,48 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Menu, X, Search } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
-import { useToast } from "@/components/ui/use-toast";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [session, setSession] = useState<any>(null);
   const location = useLocation();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleSignOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      navigate("/");
-      toast({
-        title: "Signed out successfully",
-        description: "Come back soon!",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error signing out",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -77,22 +40,6 @@ const Navbar = () => {
                 <span>{item.name}</span>
               </Link>
             ))}
-            
-            {session ? (
-              <button
-                onClick={handleSignOut}
-                className="text-secondary-dark hover:text-primary transition-colors flex items-center"
-              >
-                Sign Out
-              </button>
-            ) : (
-              <Link
-                to="/auth"
-                className="text-secondary-dark hover:text-primary transition-colors"
-              >
-                Sign In
-              </Link>
-            )}
             
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -143,25 +90,6 @@ const Navbar = () => {
                 <span>{item.name}</span>
               </Link>
             ))}
-            {session ? (
-              <button
-                onClick={() => {
-                  handleSignOut();
-                  setIsOpen(false);
-                }}
-                className="block w-full text-left py-2 text-secondary-dark hover:text-primary transition-colors"
-              >
-                Sign Out
-              </button>
-            ) : (
-              <Link
-                to="/auth"
-                className="block py-2 text-secondary-dark hover:text-primary transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                Sign In
-              </Link>
-            )}
           </div>
         )}
       </div>
