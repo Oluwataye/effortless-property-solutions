@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { MessageCircle, X, Send } from "lucide-react"
+import { MessageCircle, X, Send, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface Message {
   content: string
@@ -27,11 +28,40 @@ const ChatWidget = () => {
   }, [isOpen])
 
   useEffect(() => {
+    if (conversationId) {
+      loadExistingMessages()
+    }
+  }, [conversationId])
+
+  useEffect(() => {
     scrollToBottom()
   }, [messages])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  const loadExistingMessages = async () => {
+    if (!conversationId) return
+
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: true })
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load messages",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (data) {
+      setMessages(data)
+    }
   }
 
   const createNewConversation = async () => {
@@ -51,33 +81,62 @@ const ChatWidget = () => {
       return
     }
 
-    setConversationId(data.id)
+    if (data) {
+      setConversationId(data.id)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!message.trim() || !conversationId) return
+    if (!message.trim() || !conversationId || isLoading) return
 
     setIsLoading(true)
-    const userMessage = message
+    const userMessage = message.trim()
     setMessage('')
-    setMessages(prev => [...prev, { content: userMessage, sender_type: 'user' }])
+
+    // Optimistically add user message
+    const newUserMessage = { content: userMessage, sender_type: 'user' as const }
+    setMessages(prev => [...prev, newUserMessage])
 
     try {
+      // Store user message in database
+      const { error: messageError } = await supabase
+        .from('chat_messages')
+        .insert([{
+          conversation_id: conversationId,
+          content: userMessage,
+          sender_type: 'user'
+        }])
+
+      if (messageError) throw messageError
+
+      // Get AI response
       const response = await supabase.functions.invoke('chat', {
         body: { message: userMessage, conversationId }
       })
 
       if (response.error) throw response.error
 
-      const data = await response.data
-      setMessages(prev => [...prev, { content: data.response, sender_type: 'bot' }])
+      const botMessage = { content: response.data.response, sender_type: 'bot' as const }
+      setMessages(prev => [...prev, botMessage])
+
+      // Store bot message in database
+      await supabase
+        .from('chat_messages')
+        .insert([{
+          conversation_id: conversationId,
+          content: response.data.response,
+          sender_type: 'bot'
+        }])
+
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to send message",
         variant: "destructive",
       })
+      // Remove the optimistically added message on error
+      setMessages(prev => prev.filter(msg => msg !== newUserMessage))
     } finally {
       setIsLoading(false)
     }
@@ -93,7 +152,7 @@ const ChatWidget = () => {
           <MessageCircle className="h-6 w-6" />
         </Button>
       ) : (
-        <div className="bg-white rounded-lg shadow-xl w-96 h-[500px] flex flex-col">
+        <div className="bg-background rounded-lg shadow-xl w-96 h-[500px] flex flex-col border">
           <div className="p-4 border-b flex justify-between items-center">
             <h3 className="font-semibold">Chat Support</h3>
             <Button
@@ -105,25 +164,27 @@ const ChatWidget = () => {
             </Button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex ${msg.sender_type === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
+          <ScrollArea className="flex-1 p-4">
+            <div className="space-y-4">
+              {messages.map((msg, index) => (
                 <div
-                  className={`max-w-[80%] rounded-lg p-3 ${
-                    msg.sender_type === 'user'
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-100'
-                  }`}
+                  key={index}
+                  className={`flex ${msg.sender_type === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  {msg.content}
+                  <div
+                    className={`max-w-[80%] rounded-lg p-3 ${
+                      msg.sender_type === 'user'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted'
+                    }`}
+                  >
+                    {msg.content}
+                  </div>
                 </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+          </ScrollArea>
 
           <form onSubmit={handleSubmit} className="p-4 border-t flex gap-2">
             <Input
@@ -132,8 +193,12 @@ const ChatWidget = () => {
               placeholder="Type your message..."
               disabled={isLoading}
             />
-            <Button type="submit" disabled={isLoading}>
-              <Send className="h-4 w-4" />
+            <Button type="submit" disabled={isLoading} size="icon">
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
             </Button>
           </form>
         </div>
