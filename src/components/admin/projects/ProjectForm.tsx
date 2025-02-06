@@ -30,7 +30,12 @@ const formSchema = z.object({
   status: z.string().min(1, "Status is required"),
 });
 
-type FormData = z.infer<typeof formSchema>;
+type FormData = {
+  name: string;
+  description: string;
+  location: string;
+  status: string;
+};
 
 interface ProjectFormProps {
   projectId?: string;
@@ -65,7 +70,12 @@ const ProjectForm = ({ projectId, onSuccess }: ProjectFormProps) => {
             variant: "destructive",
           });
         } else if (data) {
-          form.reset(data);
+          form.reset({
+            name: data.name,
+            description: data.description,
+            location: data.location || "",
+            status: data.status || "ongoing",
+          });
         }
       }
     };
@@ -75,8 +85,21 @@ const ProjectForm = ({ projectId, onSuccess }: ProjectFormProps) => {
 
   const onSubmit = async (data: FormData) => {
     const operation = projectId
-      ? supabase.from("projects").update(data).eq("id", projectId)
-      : supabase.from("projects").insert(data);
+      ? supabase
+          .from("projects")
+          .update({
+            name: data.name,
+            description: data.description,
+            location: data.location,
+            status: data.status,
+          })
+          .eq("id", projectId)
+      : supabase.from("projects").insert({
+          name: data.name,
+          description: data.description,
+          location: data.location,
+          status: data.status,
+        });
 
     const { error } = await operation;
 
