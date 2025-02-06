@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { Building2, Home, Key, Construction, DollarSign } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+import ServiceSelector from "./ServiceSelector";
+import ServiceDetails from "./ServiceDetails";
 
 const services = [
   {
@@ -77,31 +70,11 @@ const Services = () => {
           </h2>
           <p className="text-xl text-gray-600 mb-8">I am looking for</p>
           
-          <Select onValueChange={setSelectedCategory} value={selectedCategory}>
-            <SelectTrigger 
-              className="w-full max-w-md mx-auto text-xl border-b-2 border-red-600 
-                rounded-none bg-transparent hover:bg-gray-50 transition-colors
-                focus:ring-0 focus:ring-offset-0 focus:border-red-700"
-            >
-              <SelectValue placeholder="Select a service" />
-            </SelectTrigger>
-            <SelectContent 
-              className="w-full max-w-md bg-white border border-gray-200 shadow-lg
-                rounded-sm mt-1 overflow-hidden"
-            >
-              {services.map((service) => (
-                <SelectItem 
-                  key={service.category} 
-                  value={service.category}
-                  className="text-lg py-4 px-6 hover:bg-gray-50 cursor-pointer
-                    border-b border-gray-100 last:border-b-0
-                    transition-colors duration-200 ease-in-out"
-                >
-                  {service.category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <ServiceSelector
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            services={services}
+          />
         </div>
 
         {selectedCategory && (
@@ -109,32 +82,7 @@ const Services = () => {
             {services
               .filter(service => service.category === selectedCategory)
               .map((service) => (
-                <div key={service.category} className="max-w-4xl mx-auto">
-                  <div className="flex flex-col md:flex-row items-start gap-8 mb-8">
-                    <div className="w-full md:w-1/2">
-                      <h3 className="text-2xl font-bold text-gray-700 mb-4 flex items-center gap-2">
-                        <service.icon className="h-6 w-6 text-red-600" />
-                        {service.category}
-                      </h3>
-                      <p className="text-gray-600 mb-6">{service.description}</p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {service.features.map((feature, index) => (
-                          <div key={index} className="flex items-center gap-2 text-gray-600">
-                            <div className="w-2 h-2 bg-red-600 rounded-full" />
-                            {feature}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="w-full md:w-1/2">
-                      <img 
-                        src={service.image} 
-                        alt={`${service.category} illustration`}
-                        className="w-full h-auto rounded-lg shadow-md"
-                      />
-                    </div>
-                  </div>
-                </div>
+                <ServiceDetails key={service.category} service={service} />
               ))}
           </div>
         )}
