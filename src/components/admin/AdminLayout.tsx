@@ -17,7 +17,8 @@ import {
   Star,
   Newspaper,
   FolderOpen,
-  Phone
+  Phone,
+  Bot
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +37,7 @@ const sidebarItems: SidebarItem[] = [
   { icon: Newspaper, label: "News", path: "/admin/news" },
   { icon: Layout, label: "Services", path: "/admin/services" },
   { icon: FolderOpen, label: "Projects", path: "/admin/projects" },
+  { icon: Bot, label: "Chatbot", path: "/admin/chatbot" },
   { icon: Phone, label: "Contact", path: "/admin/contact" },
   { icon: Image, label: "Media", path: "/admin/media" },
   { icon: Users, label: "Users", path: "/admin/users" },
