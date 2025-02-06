@@ -62,7 +62,11 @@ const ChatbotKnowledgeForm = ({
           variant: "destructive",
         });
       } else if (data) {
-        form.reset(data);
+        form.reset({
+          question: data.question,
+          answer: data.answer,
+          category: data.category,
+        });
       }
 
       return data;
@@ -74,9 +78,17 @@ const ChatbotKnowledgeForm = ({
     const operation = knowledgeId
       ? supabase
           .from("chatbot_knowledge")
-          .update(data)
+          .update({
+            question: data.question,
+            answer: data.answer,
+            category: data.category,
+          })
           .eq("id", knowledgeId)
-      : supabase.from("chatbot_knowledge").insert(data);
+      : supabase.from("chatbot_knowledge").insert({
+          question: data.question,
+          answer: data.answer,
+          category: data.category,
+        });
 
     const { error } = await operation;
 
