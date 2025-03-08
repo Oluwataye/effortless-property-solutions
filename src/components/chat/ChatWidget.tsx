@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { MessageCircle } from "lucide-react"
@@ -21,6 +22,18 @@ const ChatWidget = () => {
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
+
+  // Add welcome message when chat is opened
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      setMessages([
+        {
+          content: "👋 Hello! I'm your AI assistant. How can I help you today?",
+          sender_type: 'bot'
+        }
+      ])
+    }
+  }, [isOpen, messages.length])
 
   useEffect(() => {
     if (isOpen && !conversationId) {
@@ -60,7 +73,7 @@ const ChatWidget = () => {
       return
     }
 
-    if (data) {
+    if (data && data.length > 0) {
       const validMessages = data.map(msg => ({
         content: msg.content,
         sender_type: validateSenderType(msg.sender_type),
@@ -125,37 +138,30 @@ const ChatWidget = () => {
         body: { message: userMessage, conversationId }
       })
 
-      if (response.error) throw response.error
+      if (response.error) throw new Error(response.error.message || "Failed to get response")
 
       const botMessage: Message = { content: response.data.response, sender_type: 'bot' }
       setMessages(prev => [...prev, botMessage])
 
-      await supabase
-        .from('chat_messages')
-        .insert([{
-          conversation_id: conversationId,
-          content: response.data.response,
-          sender_type: 'bot'
-        }])
-
     } catch (error) {
+      console.error('Chat error:', error)
       toast({
         title: "Error",
-        description: "Failed to send message",
+        description: error instanceof Error ? error.message : "Failed to send message",
         variant: "destructive",
       })
-      setMessages(prev => prev.filter(msg => msg !== newUserMessage))
     } finally {
       setIsLoading(false)
+      scrollToBottom()
     }
   }
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setIsOpen(true)}
-          className="rounded-full w-12 h-12 p-0"
+          className="rounded-full w-14 h-14 p-0 shadow-lg bg-primary hover:bg-primary/90"
         >
           <MessageCircle className="h-6 w-6" />
         </Button>
@@ -164,8 +170,8 @@ const ChatWidget = () => {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
-      <div className="bg-background rounded-lg shadow-xl w-96 h-[500px] flex flex-col border">
+    <div className="fixed bottom-6 right-6 z-50">
+      <div className="bg-background rounded-lg shadow-xl w-80 sm:w-96 h-[500px] flex flex-col border">
         <ChatHeader onClose={() => setIsOpen(false)} />
         <ChatMessages messages={messages} messagesEndRef={messagesEndRef} />
         <ChatInput

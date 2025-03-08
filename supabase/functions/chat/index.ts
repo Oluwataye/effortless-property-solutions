@@ -1,5 +1,7 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.2.0"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,28 +23,102 @@ serve(async (req) => {
     }
 
     // Get relevant knowledge from the database
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    const supabaseClient = createClient(supabaseUrl, supabaseKey)
 
-    // Search for relevant knowledge
-    const { data: relevantKnowledge } = await supabaseClient
+    // Search for relevant knowledge about the query
+    const { data: relevantKnowledge, error: knowledgeError } = await supabaseClient
       .from('chatbot_knowledge')
       .select('question, answer')
       .textSearch('question', message)
+      .limit(5)
+
+    if (knowledgeError) {
+      console.error('Error fetching relevant knowledge:', knowledgeError)
+    }
+
+    // Get company services
+    const { data: services, error: servicesError } = await supabaseClient
+      .from('services')
+      .select('name, description, price')
+
+    if (servicesError) {
+      console.error('Error fetching services:', servicesError)
+    }
+
+    // Get company projects
+    const { data: projects, error: projectsError } = await supabaseClient
+      .from('projects')
+      .select('name, description, location, status')
+
+    if (projectsError) {
+      console.error('Error fetching projects:', projectsError)
+    }
+
+    // Get testimonials for company reputation
+    const { data: testimonials, error: testimonialsError } = await supabaseClient
+      .from('testimonials')
+      .select('content, name, rating')
+      .eq('status', 'approved')
       .limit(3)
 
-    // Construct system message with relevant knowledge
-    let systemMessage = "You are a helpful real estate assistant. "
+    if (testimonialsError) {
+      console.error('Error fetching testimonials:', testimonialsError)
+    }
+
+    // Construct comprehensive system message with company context
+    let systemMessage = "You are a professional, helpful customer support assistant for a real estate company. "
+    systemMessage += "Be polite, informative, and concise in your responses. "
+    
+    // Add services information
+    if (services?.length > 0) {
+      systemMessage += "\n\nCOMPANY SERVICES:\n"
+      services.forEach(service => {
+        systemMessage += `- ${service.name}: ${service.description}`
+        if (service.price) {
+          systemMessage += ` (Price: $${service.price})`
+        }
+        systemMessage += "\n"
+      })
+    }
+    
+    // Add projects information
+    if (projects?.length > 0) {
+      systemMessage += "\n\nCOMPANY PROJECTS:\n"
+      projects.forEach(project => {
+        systemMessage += `- ${project.name}: ${project.description}`
+        if (project.location) {
+          systemMessage += ` (Location: ${project.location})`
+        }
+        if (project.status) {
+          systemMessage += ` (Status: ${project.status})`
+        }
+        systemMessage += "\n"
+      })
+    }
+    
+    // Add testimonials for credibility
+    if (testimonials?.length > 0) {
+      systemMessage += "\n\nCUSTOMER TESTIMONIALS:\n"
+      testimonials.forEach(testimonial => {
+        systemMessage += `- "${testimonial.content}" - ${testimonial.name}`
+        if (testimonial.rating) {
+          systemMessage += ` (Rating: ${testimonial.rating}/5)`
+        }
+        systemMessage += "\n"
+      })
+    }
+    
+    // Add specific knowledge from the knowledge base if relevant
     if (relevantKnowledge?.length > 0) {
-      systemMessage += "Here is some relevant information: \n"
+      systemMessage += "\n\nRELEVANT COMPANY KNOWLEDGE:\n"
       relevantKnowledge.forEach(({ question, answer }) => {
         systemMessage += `Q: ${question}\nA: ${answer}\n\n`
       })
     }
 
-    // Call OpenAI API
+    // Call OpenAI API with enhanced context
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -50,7 +126,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemMessage },
           { role: 'user', content: message }
