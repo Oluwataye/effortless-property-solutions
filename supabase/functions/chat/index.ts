@@ -34,15 +34,49 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     const supabaseClient = createClient(supabaseUrl, supabaseKey)
 
-    // Search for relevant knowledge about the query
-    const { data: relevantKnowledge, error: knowledgeError } = await supabaseClient
-      .from('chatbot_knowledge')
-      .select('question, answer')
-      .textSearch('question', message)
-      .limit(5)
+    // Search for relevant knowledge about the query using a more robust approach
+    let relevantKnowledge = []
+    try {
+      // First try with text search
+      const { data: textSearchData, error: textSearchError } = await supabaseClient
+        .from('chatbot_knowledge')
+        .select('question, answer')
+        .textSearch('question', message, {
+          type: 'websearch',
+          config: 'english'
+        })
+        .limit(5)
 
-    if (knowledgeError) {
-      console.error('Error fetching relevant knowledge:', knowledgeError)
+      if (textSearchError) {
+        console.error('Error with text search:', textSearchError)
+        // Fallback to ILIKE search if text search fails
+        const { data: ilikeData, error: ilikeError } = await supabaseClient
+          .from('chatbot_knowledge')
+          .select('question, answer')
+          .or(`question.ilike.%${message}%,answer.ilike.%${message}%`)
+          .limit(5)
+
+        if (!ilikeError && ilikeData) {
+          relevantKnowledge = ilikeData
+        }
+      } else if (textSearchData && textSearchData.length > 0) {
+        relevantKnowledge = textSearchData
+      } else {
+        // If text search returns no results, try with ILIKE
+        const { data: ilikeData, error: ilikeError } = await supabaseClient
+          .from('chatbot_knowledge')
+          .select('question, answer')
+          .or(`question.ilike.%${message}%,answer.ilike.%${message}%`)
+          .limit(5)
+
+        if (!ilikeError && ilikeData) {
+          relevantKnowledge = ilikeData
+        }
+      }
+
+      console.log('Relevant knowledge found:', relevantKnowledge.length > 0 ? relevantKnowledge : 'None')
+    } catch (knowledgeError) {
+      console.error('Error fetching relevant knowledge with fallback approach:', knowledgeError)
     }
 
     // Get company services
@@ -52,6 +86,8 @@ serve(async (req) => {
 
     if (servicesError) {
       console.error('Error fetching services:', servicesError)
+    } else {
+      console.log('Services found:', services ? services.length : 0)
     }
 
     // Get company projects
@@ -61,6 +97,8 @@ serve(async (req) => {
 
     if (projectsError) {
       console.error('Error fetching projects:', projectsError)
+    } else {
+      console.log('Projects found:', projects ? projects.length : 0)
     }
 
     // Get testimonials for company reputation
@@ -72,14 +110,17 @@ serve(async (req) => {
 
     if (testimonialsError) {
       console.error('Error fetching testimonials:', testimonialsError)
+    } else {
+      console.log('Testimonials found:', testimonials ? testimonials.length : 0)
     }
 
     // Construct comprehensive system message with company context
     let systemMessage = "You are a professional, helpful customer support assistant for a real estate company. "
     systemMessage += "Be polite, informative, and concise in your responses. "
+    systemMessage += "Include specific information from the company context in your responses when relevant. "
     
     // Add services information
-    if (services?.length > 0) {
+    if (services && services.length > 0) {
       systemMessage += "\n\nCOMPANY SERVICES:\n"
       services.forEach(service => {
         systemMessage += `- ${service.name}: ${service.description}`
@@ -91,7 +132,7 @@ serve(async (req) => {
     }
     
     // Add projects information
-    if (projects?.length > 0) {
+    if (projects && projects.length > 0) {
       systemMessage += "\n\nCOMPANY PROJECTS:\n"
       projects.forEach(project => {
         systemMessage += `- ${project.name}: ${project.description}`
@@ -106,7 +147,7 @@ serve(async (req) => {
     }
     
     // Add testimonials for credibility
-    if (testimonials?.length > 0) {
+    if (testimonials && testimonials.length > 0) {
       systemMessage += "\n\nCUSTOMER TESTIMONIALS:\n"
       testimonials.forEach(testimonial => {
         systemMessage += `- "${testimonial.content}" - ${testimonial.name}`
@@ -118,12 +159,15 @@ serve(async (req) => {
     }
     
     // Add specific knowledge from the knowledge base if relevant
-    if (relevantKnowledge?.length > 0) {
+    if (relevantKnowledge && relevantKnowledge.length > 0) {
       systemMessage += "\n\nRELEVANT COMPANY KNOWLEDGE:\n"
       relevantKnowledge.forEach(({ question, answer }) => {
         systemMessage += `Q: ${question}\nA: ${answer}\n\n`
       })
     }
+
+    console.log('System message length:', systemMessage.length)
+    console.log('System message preview:', systemMessage.substring(0, 200) + '...')
 
     try {
       // Call OpenAI API with enhanced context
@@ -139,6 +183,7 @@ serve(async (req) => {
             { role: 'system', content: systemMessage },
             { role: 'user', content: message }
           ],
+          temperature: 0.7,
         }),
       })
 
