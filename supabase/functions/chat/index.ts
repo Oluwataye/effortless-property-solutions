@@ -19,7 +19,14 @@ serve(async (req) => {
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
 
     if (!openAIApiKey) {
-      throw new Error('OPENAI_API_KEY is not configured')
+      console.error('Missing OpenAI API Key')
+      return new Response(
+        JSON.stringify({ 
+          error: "OPENAI_API_KEY is not configured",
+          response: "I'm sorry, but I'm currently unable to process your request due to a configuration issue. Please try again later or contact the administrator."
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     // Get relevant knowledge from the database
@@ -118,42 +125,61 @@ serve(async (req) => {
       })
     }
 
-    // Call OpenAI API with enhanced context
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          { role: 'system', content: systemMessage },
-          { role: 'user', content: message }
-        ],
-      }),
-    })
+    try {
+      // Call OpenAI API with enhanced context
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          messages: [
+            { role: 'system', content: systemMessage },
+            { role: 'user', content: message }
+          ],
+        }),
+      })
 
-    const data = await response.json()
-    const aiResponse = data.choices[0].message.content
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('OpenAI API error:', errorData);
+        throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+      }
 
-    // Store the message in the database
-    if (conversationId) {
-      await supabaseClient.from('chat_messages').insert([
-        { conversation_id: conversationId, content: message, sender_type: 'user' },
-        { conversation_id: conversationId, content: aiResponse, sender_type: 'bot' }
-      ])
+      const data = await response.json()
+      const aiResponse = data.choices[0].message.content
+
+      // Store the message in the database
+      if (conversationId) {
+        await supabaseClient.from('chat_messages').insert([
+          { conversation_id: conversationId, content: aiResponse, sender_type: 'bot' }
+        ])
+      }
+
+      return new Response(
+        JSON.stringify({ response: aiResponse }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    } catch (openAIError) {
+      console.error('OpenAI API error:', openAIError)
+      return new Response(
+        JSON.stringify({ 
+          error: openAIError.message,
+          response: "I'm sorry, but I encountered an issue while processing your request. Please try again later." 
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
-
-    return new Response(
-      JSON.stringify({ response: aiResponse }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
   } catch (error) {
     console.error('Error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ 
+        error: error.message,
+        response: "I'm sorry, but I encountered an unexpected error. Please try again later." 
+      }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 })

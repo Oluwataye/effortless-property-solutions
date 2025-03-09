@@ -91,24 +91,34 @@ const ChatWidget = () => {
   }
 
   const createNewConversation = async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    const { data, error } = await supabase
-      .from('chat_conversations')
-      .insert([{ user_id: session?.user?.id || null }])
-      .select()
-      .single()
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const { data, error } = await supabase
+        .from('chat_conversations')
+        .insert([{ user_id: session?.user?.id || null }])
+        .select()
+        .single()
 
-    if (error) {
+      if (error) {
+        console.error('Failed to create conversation:', error)
+        toast({
+          title: "Error",
+          description: "Failed to start conversation",
+          variant: "destructive",
+        })
+        return
+      }
+
+      if (data) {
+        setConversationId(data.id)
+      }
+    } catch (error) {
+      console.error('Error creating conversation:', error)
       toast({
         title: "Error",
         description: "Failed to start conversation",
         variant: "destructive",
       })
-      return
-    }
-
-    if (data) {
-      setConversationId(data.id)
     }
   }
 
@@ -138,13 +148,50 @@ const ChatWidget = () => {
         body: { message: userMessage, conversationId }
       })
 
-      if (response.error) throw new Error(response.error.message || "Failed to get response")
-
-      const botMessage: Message = { content: response.data.response, sender_type: 'bot' }
-      setMessages(prev => [...prev, botMessage])
-
+      // Handle different types of responses
+      if (response.error) {
+        console.error('Chat error:', response.error)
+        
+        // Add a bot error message
+        const errorMessage: Message = { 
+          content: "I'm sorry, but I'm currently unable to respond. Please try again later.", 
+          sender_type: 'bot' 
+        }
+        setMessages(prev => [...prev, errorMessage])
+        
+        toast({
+          title: "Error",
+          description: "Failed to get response from assistant",
+          variant: "destructive",
+        })
+      } else {
+        // Check if response contains an error but also a graceful response message
+        if (response.data.error && response.data.response) {
+          console.warn('Chat warning:', response.data.error)
+          const botMessage: Message = { content: response.data.response, sender_type: 'bot' }
+          setMessages(prev => [...prev, botMessage])
+        } else if (response.data.response) {
+          const botMessage: Message = { content: response.data.response, sender_type: 'bot' }
+          setMessages(prev => [...prev, botMessage])
+        } else {
+          // Fallback error message if no response is provided
+          const errorMessage: Message = { 
+            content: "I'm sorry, I couldn't process your request at this time. Please try again later.", 
+            sender_type: 'bot' 
+          }
+          setMessages(prev => [...prev, errorMessage])
+        }
+      }
     } catch (error) {
       console.error('Chat error:', error)
+      
+      // Add a bot error message
+      const errorMessage: Message = { 
+        content: "I'm sorry, an unexpected error occurred. Please try again later.", 
+        sender_type: 'bot' 
+      }
+      setMessages(prev => [...prev, errorMessage])
+      
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to send message",
