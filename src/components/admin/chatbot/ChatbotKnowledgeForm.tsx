@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { 
   Select,
   SelectContent,
@@ -44,7 +44,9 @@ const ChatbotKnowledgeForm = ({
   onSuccess,
 }: ChatbotKnowledgeFormProps) => {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customCategory, setCustomCategory] = useState("");
+  const queryClient = useQueryClient();
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -55,7 +57,7 @@ const ChatbotKnowledgeForm = ({
     },
   });
 
-  const { data: categories } = useQuery({
+  const { data: categories, isLoading: isCategoriesLoading } = useQuery({
     queryKey: ["chatbot-categories"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -68,10 +70,11 @@ const ChatbotKnowledgeForm = ({
       // Extract unique categories
       const uniqueCategories = Array.from(
         new Set(data.map((item) => item.category))
-      );
+      ).filter(Boolean);
       
       return uniqueCategories;
     },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   const { data: knowledgeItem, isLoading: isLoadingKnowledgeItem } = useQuery({
@@ -106,27 +109,40 @@ const ChatbotKnowledgeForm = ({
         answer: knowledgeItem.answer,
         category: knowledgeItem.category,
       });
+      setCustomCategory(knowledgeItem.category);
     }
   }, [knowledgeItem, form]);
+
+  const handleCategorySelect = (value: string) => {
+    if (value === "new") {
+      form.setValue("category", customCategory);
+    } else {
+      form.setValue("category", value);
+      setCustomCategory("");
+    }
+  };
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     
     try {
+      // Use the custom category if it's set
+      const finalCategory = customCategory || data.category;
+      
       const operation = knowledgeId
         ? supabase
             .from("chatbot_knowledge")
             .update({
               question: data.question,
               answer: data.answer,
-              category: data.category,
+              category: finalCategory,
               updated_at: new Date().toISOString(),
             })
             .eq("id", knowledgeId)
         : supabase.from("chatbot_knowledge").insert({
             question: data.question,
             answer: data.answer,
-            category: data.category,
+            category: finalCategory,
           });
 
       const { error } = await operation;
@@ -142,8 +158,17 @@ const ChatbotKnowledgeForm = ({
           title: "Success",
           description: "Knowledge entry saved successfully",
         });
+        // Invalidate queries to refresh data
+        queryClient.invalidateQueries({ queryKey: ["chatbot-knowledge"] });
+        queryClient.invalidateQueries({ queryKey: ["chatbot-categories"] });
+        
         onSuccess();
-        form.reset();
+        form.reset({
+          question: "",
+          answer: "",
+          category: "",
+        });
+        setCustomCategory("");
       }
     } catch (error) {
       console.error("Error saving knowledge entry:", error);
@@ -219,7 +244,7 @@ const ChatbotKnowledgeForm = ({
                 Select or create a category for this knowledge entry
               </FormDescription>
               <Select
-                onValueChange={field.onChange}
+                onValueChange={handleCategorySelect}
                 defaultValue={field.value}
                 value={field.value}
               >
@@ -229,13 +254,10 @@ const ChatbotKnowledgeForm = ({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {/* Option to create a new category if input doesn't match existing ones */}
-                  <SelectItem value={field.value || ""}>
-                    {field.value ? field.value : "Create new category"}
-                  </SelectItem>
+                  <SelectItem value="new">Create new category</SelectItem>
                   
                   {/* Existing categories */}
-                  {categories?.filter(category => category !== field.value).map((category) => (
+                  {categories?.map((category) => (
                     <SelectItem key={category} value={category}>
                       {category}
                     </SelectItem>
@@ -243,14 +265,15 @@ const ChatbotKnowledgeForm = ({
                 </SelectContent>
               </Select>
               
-              {/* Allow for custom category input if "Create new category" is selected */}
-              {!categories?.includes(field.value) && (
-                <Input
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder="Enter a new category name"
-                  className="mt-2"
-                />
+              {/* Show input field for custom category */}
+              {field.value === "new" && (
+                <div className="mt-2">
+                  <Input
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    placeholder="Enter a new category name"
+                  />
+                </div>
               )}
               
               <FormMessage />

@@ -7,14 +7,20 @@ import ChatbotSettings from "@/components/admin/chatbot/ChatbotSettings";
 import ChatbotTester from "@/components/admin/chatbot/ChatbotTester";
 import ChatbotConversations from "@/components/admin/chatbot/ChatbotConversations";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const ChatbotPage = () => {
   const [selectedKnowledgeId, setSelectedKnowledgeId] = useState<string | undefined>();
   const [isCreating, setIsCreating] = useState(false);
 
   const handleSuccess = () => {
+    setSelectedKnowledgeId(undefined);
+    setIsCreating(false);
+  };
+
+  const handleCancelForm = () => {
     setSelectedKnowledgeId(undefined);
     setIsCreating(false);
   };
@@ -36,22 +42,40 @@ const ChatbotPage = () => {
           
           <TabsContent value="knowledge" className="space-y-6">
             <div className="flex justify-end">
-              <Button onClick={() => setIsCreating(true)}>
+              <Button 
+                onClick={() => {
+                  setIsCreating(true);
+                  setSelectedKnowledgeId(undefined);
+                }}
+                disabled={isCreating || !!selectedKnowledgeId}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Knowledge
               </Button>
             </div>
 
             {(isCreating || selectedKnowledgeId) && (
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h2 className="text-xl font-semibold mb-4">
-                  {selectedKnowledgeId ? "Edit" : "Add"} Knowledge Entry
-                </h2>
-                <ChatbotKnowledgeForm
-                  knowledgeId={selectedKnowledgeId}
-                  onSuccess={handleSuccess}
-                />
-              </div>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-xl font-semibold">
+                    {selectedKnowledgeId ? "Edit" : "Add"} Knowledge Entry
+                  </CardTitle>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={handleCancelForm}
+                    className="h-8 w-8"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <ChatbotKnowledgeForm
+                    knowledgeId={selectedKnowledgeId}
+                    onSuccess={handleSuccess}
+                  />
+                </CardContent>
+              </Card>
             )}
 
             <ChatbotKnowledgeList onEdit={setSelectedKnowledgeId} />
