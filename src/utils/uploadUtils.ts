@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export const uploadImage = async (file: File, bucket: "property_images" | "blog_images") => {
@@ -18,4 +19,17 @@ export const uploadImage = async (file: File, bucket: "property_images" | "blog_
     .getPublicUrl(filePath);
 
   return publicUrl.publicUrl;
+};
+
+export const uploadMedia = async (file: File) => {
+  const { data, error } = await supabase.storage
+    .from('media')
+    .upload(file.name, file, {
+      contentType: file.type,
+      upsert: true,
+    });
+
+  if (error) throw error;
+
+  return data.path;
 };
