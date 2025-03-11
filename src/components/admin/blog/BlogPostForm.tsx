@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadImage } from "@/utils/uploadUtils";
+import MediaSelector from "@/components/admin/media/MediaSelector";
 
 interface BlogPostFormProps {
   onSuccess: () => void;
@@ -20,19 +21,13 @@ interface BlogPostFormProps {
 
 const BlogPostForm = ({ onSuccess, onCancel }: BlogPostFormProps) => {
   const { toast } = useToast();
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     content: "",
     status: "draft",
+    featured_image: "",
     tags: [] as string[],
   });
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedImage(e.target.files[0]);
-    }
-  };
 
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const tags = e.target.value.split(",").map((tag) => tag.trim());
@@ -42,18 +37,12 @@ const BlogPostForm = ({ onSuccess, onCancel }: BlogPostFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      let featuredImage = null;
-      if (selectedImage) {
-        featuredImage = await uploadImage(selectedImage, "blog_images");
-      }
-
       const { data: { user } } = await supabase.auth.getUser();
       
       const { error } = await supabase.from("blog_posts").insert([
         {
           ...formData,
           author_id: user?.id,
-          featured_image: featuredImage,
         },
       ]);
 
@@ -114,11 +103,10 @@ const BlogPostForm = ({ onSuccess, onCancel }: BlogPostFormProps) => {
         <label className="block text-sm font-medium text-gray-700">
           Featured Image
         </label>
-        <Input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="cursor-pointer"
+        <MediaSelector 
+          value={formData.featured_image}
+          onChange={(url) => setFormData({ ...formData, featured_image: url })}
+          fieldName="blog_featured_image"
         />
       </div>
       <div className="flex justify-end space-x-2">

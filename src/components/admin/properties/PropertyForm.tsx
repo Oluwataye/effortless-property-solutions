@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadImage } from "@/utils/uploadUtils";
+import MediaSelector from "@/components/admin/media/MediaSelector";
 
 interface PropertyFormProps {
   onSuccess: () => void;
@@ -20,7 +21,6 @@ interface PropertyFormProps {
 
 const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
   const { toast } = useToast();
-  const [selectedImages, setSelectedImages] = useState<FileList | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -31,26 +31,20 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
     area: "",
     category: "residential",
     status: "available",
+    image_urls: [] as string[],
   });
+  const [currentImageField, setCurrentImageField] = useState("property_image_1");
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setSelectedImages(e.target.files);
-    }
+  const addImageUrl = (url: string) => {
+    const index = parseInt(currentImageField.split('_').pop() || "1") - 1;
+    const newImageUrls = [...formData.image_urls];
+    newImageUrls[index] = url;
+    setFormData({ ...formData, image_urls: newImageUrls.filter(Boolean) });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const imageUrls: string[] = [];
-      
-      if (selectedImages) {
-        for (let i = 0; i < selectedImages.length; i++) {
-          const url = await uploadImage(selectedImages[i], "property_images");
-          imageUrls.push(url);
-        }
-      }
-
       const { error } = await supabase.from("properties").insert([
         {
           ...formData,
@@ -58,7 +52,6 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
           bedrooms: parseInt(formData.bedrooms),
           bathrooms: parseInt(formData.bathrooms),
           area: parseFloat(formData.area),
-          image_urls: imageUrls,
           created_by: (await supabase.auth.getUser()).data.user?.id,
         },
       ]);
@@ -77,6 +70,36 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleImageFieldChange = (index: number) => {
+    setCurrentImageField(`property_image_${index}`);
+  };
+
+  const renderImageSelectors = () => {
+    const selectors = [];
+    // Always render the current number of images plus one more (up to 5)
+    const totalSelectors = Math.min(formData.image_urls.length + 1, 5);
+    
+    for (let i = 0; i < totalSelectors; i++) {
+      selectors.push(
+        <div key={i} className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">
+            Property Image {i + 1}
+          </label>
+          <MediaSelector
+            value={formData.image_urls[i] || ''}
+            onChange={(url) => {
+              handleImageFieldChange(i + 1);
+              addImageUrl(url);
+            }}
+            fieldName={`property_image_${i + 1}`}
+          />
+        </div>
+      );
+    }
+    
+    return selectors;
   };
 
   return (
@@ -177,17 +200,8 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
           </SelectContent>
         </Select>
       </div>
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Property Images
-        </label>
-        <Input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleImageChange}
-          className="cursor-pointer"
-        />
+      <div className="space-y-4">
+        {renderImageSelectors()}
       </div>
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>

@@ -33,3 +33,11 @@ export const uploadMedia = async (file: File) => {
 
   return data.path;
 };
+
+export const getMediaUrl = (fileName: string) => {
+  const { data } = supabase.storage
+    .from('media')
+    .getPublicUrl(fileName);
+  
+  return data.publicUrl;
+};
