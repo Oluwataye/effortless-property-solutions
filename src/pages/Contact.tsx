@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -56,15 +55,14 @@ const Contact = () => {
       // Store contact message in Supabase
       const { error } = await supabase
         .from('contact_messages')
-        .insert([
-          { 
-            name: data.name, 
-            email: data.email, 
-            message: data.message,
-            phone: data.phone,
-            subject: data.subject
-          }
-        ]);
+        .insert([{ 
+          name: data.name, 
+          email: data.email, 
+          message: data.message,
+          phone: data.phone,
+          subject: data.subject,
+          read: false
+        }]);
       
       if (error) throw error;
       

@@ -135,6 +135,7 @@ export type Database = {
           id: string
           message: string
           name: string
+          read: boolean | null
           status: string | null
           subject: string
           updated_at: string | null
@@ -145,6 +146,7 @@ export type Database = {
           id?: string
           message: string
           name: string
+          read?: boolean | null
           status?: string | null
           subject: string
           updated_at?: string | null
@@ -155,6 +157,7 @@ export type Database = {
           id?: string
           message?: string
           name?: string
+          read?: boolean | null
           status?: string | null
           subject?: string
           updated_at?: string | null
