@@ -58,7 +58,10 @@ export const useSeoSettings = () => {
       }
 
       if (data && data.setting_value) {
-        setSettings(data.setting_value as unknown as SeoSettings);
+        setSettings({
+          ...defaultSeoSettings,
+          ...(data.setting_value as any)
+        });
       }
     } catch (error) {
       console.error("Error:", error);
