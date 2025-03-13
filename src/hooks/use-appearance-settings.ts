@@ -3,43 +3,33 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-export interface WebsiteSettings {
-  siteName: string;
-  contactEmail: string;
-  contactPhone: string;
-  address: string;
-  footerText: string;
-  logoUrl: string;
-  faviconUrl: string;
-  socialLinks: {
-    facebook: string;
-    twitter: string;
-    instagram: string;
-    linkedin: string;
-  };
+export interface AppearanceSettings {
+  theme: string;
+  colorScheme: string;
+  fontSize: number;
+  enableAnimations: boolean;
+  borderRadius: number;
+  cardStyle: string;
+  showShadows: boolean;
+  menuStyle: string;
 }
 
-export const defaultSettings: WebsiteSettings = {
-  siteName: "Real Estate Website",
-  contactEmail: "contact@example.com",
-  contactPhone: "+1 234 567 8901",
-  address: "123 Main St, City, Country",
-  footerText: "© 2024 Real Estate Company. All rights reserved.",
-  logoUrl: "",
-  faviconUrl: "",
-  socialLinks: {
-    facebook: "https://facebook.com",
-    twitter: "https://twitter.com",
-    instagram: "https://instagram.com",
-    linkedin: "https://linkedin.com"
-  }
+export const defaultSettings: AppearanceSettings = {
+  theme: "light",
+  colorScheme: "blue",
+  fontSize: 16,
+  enableAnimations: true,
+  borderRadius: 8,
+  cardStyle: "flat",
+  showShadows: true,
+  menuStyle: "sidebar"
 };
 
-export const useWebsiteSettings = () => {
+export const useAppearanceSettings = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState<WebsiteSettings>(defaultSettings);
+  const [settings, setSettings] = useState<AppearanceSettings>(defaultSettings);
 
   useEffect(() => {
     fetchSettings();
@@ -51,16 +41,16 @@ export const useWebsiteSettings = () => {
       const { data, error } = await supabase
         .from("website_settings")
         .select("*")
-        .eq("setting_key", "general_settings")
+        .eq("setting_key", "appearance_settings")
         .single();
 
       if (error && error.code !== "PGRST116") {
-        console.error("Error fetching website settings:", error);
+        console.error("Error fetching appearance settings:", error);
         return;
       }
 
       if (data && data.setting_value) {
-        setSettings(data.setting_value as unknown as WebsiteSettings);
+        setSettings(data.setting_value as unknown as AppearanceSettings);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -74,22 +64,25 @@ export const useWebsiteSettings = () => {
     try {
       const { data, error } = await supabase
         .from("website_settings")
-        .upsert({
-          setting_key: "general_settings",
-          setting_value: settings as any
-        }, { onConflict: "setting_key" });
+        .upsert(
+          {
+            setting_key: "appearance_settings",
+            setting_value: settings as any
+          },
+          { onConflict: "setting_key" }
+        );
 
       if (error) {
         toast({
           title: "Error",
-          description: "Failed to save settings",
+          description: "Failed to save appearance settings",
           variant: "destructive",
         });
         console.error("Error saving settings:", error);
       } else {
         toast({
           title: "Success",
-          description: "Website settings saved successfully",
+          description: "Appearance settings saved successfully",
         });
       }
     } catch (error) {
