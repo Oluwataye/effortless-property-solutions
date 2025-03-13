@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -10,20 +9,33 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 
-const AppearanceSettings = () => {
+interface AppearanceSettings {
+  theme: string;
+  colorScheme: string;
+  fontSize: number;
+  enableAnimations: boolean;
+  borderRadius: number;
+  cardStyle: string;
+  showShadows: boolean;
+  menuStyle: string;
+}
+
+const defaultSettings: AppearanceSettings = {
+  theme: "light",
+  colorScheme: "blue",
+  fontSize: 16,
+  enableAnimations: true,
+  borderRadius: 8,
+  cardStyle: "flat",
+  showShadows: true,
+  menuStyle: "sidebar"
+};
+
+const AppearanceSettingsComponent = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState({
-    theme: "light",
-    colorScheme: "blue",
-    fontSize: 16,
-    enableAnimations: true,
-    borderRadius: 8,
-    cardStyle: "flat",
-    showShadows: true,
-    menuStyle: "sidebar"
-  });
+  const [settings, setSettings] = useState<AppearanceSettings>(defaultSettings);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -40,7 +52,7 @@ const AppearanceSettings = () => {
         }
 
         if (data && data.setting_value) {
-          setSettings(data.setting_value);
+          setSettings(data.setting_value as AppearanceSettings);
         }
       } catch (error) {
         console.error("Error:", error);
@@ -251,4 +263,4 @@ const AppearanceSettings = () => {
   );
 };
 
-export default AppearanceSettings;
+export default AppearanceSettingsComponent;

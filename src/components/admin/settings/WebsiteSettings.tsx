@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -11,25 +10,43 @@ import { Loader2 } from "lucide-react";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import MediaSelector from "@/components/admin/media/MediaSelector";
 
-const WebsiteSettings = () => {
+interface WebsiteSettings {
+  siteName: string;
+  contactEmail: string;
+  contactPhone: string;
+  address: string;
+  footerText: string;
+  logoUrl: string;
+  faviconUrl: string;
+  socialLinks: {
+    facebook: string;
+    twitter: string;
+    instagram: string;
+    linkedin: string;
+  };
+}
+
+const defaultSettings: WebsiteSettings = {
+  siteName: "Real Estate Website",
+  contactEmail: "contact@example.com",
+  contactPhone: "+1 234 567 8901",
+  address: "123 Main St, City, Country",
+  footerText: "© 2024 Real Estate Company. All rights reserved.",
+  logoUrl: "",
+  faviconUrl: "",
+  socialLinks: {
+    facebook: "https://facebook.com",
+    twitter: "https://twitter.com",
+    instagram: "https://instagram.com",
+    linkedin: "https://linkedin.com"
+  }
+};
+
+const WebsiteSettingsComponent = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState({
-    siteName: "Real Estate Website",
-    contactEmail: "contact@example.com",
-    contactPhone: "+1 234 567 8901",
-    address: "123 Main St, City, Country",
-    footerText: "© 2024 Real Estate Company. All rights reserved.",
-    logoUrl: "",
-    faviconUrl: "",
-    socialLinks: {
-      facebook: "https://facebook.com",
-      twitter: "https://twitter.com",
-      instagram: "https://instagram.com",
-      linkedin: "https://linkedin.com"
-    }
-  });
+  const [settings, setSettings] = useState<WebsiteSettings>(defaultSettings);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -46,7 +63,7 @@ const WebsiteSettings = () => {
         }
 
         if (data && data.setting_value) {
-          setSettings(data.setting_value);
+          setSettings(data.setting_value as WebsiteSettings);
         }
       } catch (error) {
         console.error("Error:", error);
@@ -254,4 +271,4 @@ const WebsiteSettings = () => {
   );
 };
 
-export default WebsiteSettings;
+export default WebsiteSettingsComponent;

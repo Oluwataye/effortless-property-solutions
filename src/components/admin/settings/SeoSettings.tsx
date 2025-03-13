@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -11,24 +10,41 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import MediaSelector from "@/components/admin/media/MediaSelector";
 
-const SeoSettings = () => {
+interface SeoSettings {
+  siteTitle: string;
+  metaDescription: string;
+  metaKeywords: string;
+  ogTitle: string;
+  ogDescription: string;
+  ogImage: string;
+  enableSitemap: boolean;
+  enableRobotsTxt: boolean;
+  enableStructuredData: boolean;
+  canonicalUrl: string;
+  googleAnalyticsId: string;
+  googleVerification: string;
+}
+
+const defaultSettings: SeoSettings = {
+  siteTitle: "Real Estate Website | Find Your Dream Home",
+  metaDescription: "Browse our selection of premium properties and find your dream home today. Professional real estate services.",
+  metaKeywords: "real estate, property, homes for sale, luxury homes, apartments",
+  ogTitle: "Real Estate Website",
+  ogDescription: "Find your dream home with our real estate services",
+  ogImage: "",
+  enableSitemap: true,
+  enableRobotsTxt: true,
+  enableStructuredData: true,
+  canonicalUrl: "https://example.com",
+  googleAnalyticsId: "",
+  googleVerification: ""
+};
+
+const SeoSettingsComponent = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState({
-    siteTitle: "Real Estate Website | Find Your Dream Home",
-    metaDescription: "Browse our selection of premium properties and find your dream home today. Professional real estate services.",
-    metaKeywords: "real estate, property, homes for sale, luxury homes, apartments",
-    ogTitle: "Real Estate Website",
-    ogDescription: "Find your dream home with our real estate services",
-    ogImage: "",
-    enableSitemap: true,
-    enableRobotsTxt: true,
-    enableStructuredData: true,
-    canonicalUrl: "https://example.com",
-    googleAnalyticsId: "",
-    googleVerification: ""
-  });
+  const [settings, setSettings] = useState<SeoSettings>(defaultSettings);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -45,7 +61,7 @@ const SeoSettings = () => {
         }
 
         if (data && data.setting_value) {
-          setSettings(data.setting_value);
+          setSettings(data.setting_value as SeoSettings);
         }
       } catch (error) {
         console.error("Error:", error);
@@ -262,4 +278,4 @@ const SeoSettings = () => {
   );
 };
 
-export default SeoSettings;
+export default SeoSettingsComponent;
