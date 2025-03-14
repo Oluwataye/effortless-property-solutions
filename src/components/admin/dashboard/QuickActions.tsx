@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ const QuickActions = () => {
     {
       title: "Add Blog Post",
       icon: FileText,
-      path: "/admin/blog",
+      path: "/admin/blog-posts",
       color: "text-green-500",
     },
     {

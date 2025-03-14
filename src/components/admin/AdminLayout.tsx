@@ -32,7 +32,7 @@ const sidebarItems: SidebarItem[] = [
   { icon: Home, label: "Dashboard", path: "/admin/dashboard" },
   { icon: Building2, label: "Properties", path: "/admin/properties" },
   { icon: MessageSquare, label: "Inquiries", path: "/admin/inquiries" },
-  { icon: FileText, label: "Blog Posts", path: "/admin/blog" },
+  { icon: FileText, label: "Blog Posts", path: "/admin/blog-posts" },
   { icon: Star, label: "Testimonials", path: "/admin/testimonials" },
   { icon: Newspaper, label: "News", path: "/admin/news" },
   { icon: Layout, label: "Services", path: "/admin/services" },
