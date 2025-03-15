@@ -62,7 +62,7 @@ const BlogPosts = () => {
       if (error) throw error;
       
       return { 
-        posts: data,
+        posts: data || [],
         totalCount: count || 0
       };
     },
