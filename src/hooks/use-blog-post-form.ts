@@ -38,7 +38,8 @@ export const useBlogPostForm = ({ post, onSuccess }: UseBlogPostFormProps) => {
     },
   });
 
-  const handleTagsChange = (value: string) => {
+  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
     setTagsInput(value);
     const tagsArray = value.split(",").map((tag) => tag.trim()).filter(Boolean);
     form.setValue("tags", tagsArray);
