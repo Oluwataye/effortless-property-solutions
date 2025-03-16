@@ -1,20 +1,22 @@
+
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ServicesList from "@/components/admin/services/ServicesList";
 import ServiceForm from "@/components/admin/services/ServiceForm";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { Service } from "@/hooks/use-services";
 
 const Services = () => {
   const [isAddingService, setIsAddingService] = useState(false);
-  const [editingService, setEditingService] = useState<any>(null);
+  const [editingService, setEditingService] = useState<Service | null>(null);
 
   const handleAddNew = () => {
     setIsAddingService(true);
     setEditingService(null);
   };
 
-  const handleEditService = (service: any) => {
+  const handleEditService = (service: Service) => {
     setEditingService(service);
     setIsAddingService(true);
   };

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -5,12 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { X } from "lucide-react";
+import { X, Building2, Home, Key, Construction, DollarSign } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ServiceFormProps {
   service?: any;
   onClose: () => void;
 }
+
+// Available icon options
+const iconOptions = [
+  { name: "Building2", icon: Building2 },
+  { name: "Home", icon: Home },
+  { name: "Key", icon: Key },
+  { name: "Construction", icon: Construction },
+  { name: "DollarSign", icon: DollarSign },
+];
 
 const ServiceForm = ({ service, onClose }: ServiceFormProps) => {
   const [formData, setFormData] = useState({
@@ -31,29 +48,34 @@ const ServiceForm = ({ service, onClose }: ServiceFormProps) => {
       price: formData.price ? parseFloat(formData.price) : null,
     };
 
-    const { error } = service?.id
-      ? await supabase
-          .from("services")
-          .update(data)
-          .eq("id", service.id)
-      : await supabase.from("services").insert([data]);
+    try {
+      const { error } = service?.id
+        ? await supabase
+            .from("services")
+            .update(data)
+            .eq("id", service.id)
+        : await supabase.from("services").insert([data]);
 
-    setLoading(false);
+      if (error) throw error;
 
-    if (error) {
+      toast({
+        title: "Success",
+        description: `Service ${service?.id ? "updated" : "created"} successfully`,
+      });
+      onClose();
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to save service",
+        description: `Failed to save service: ${error.message}`,
         variant: "destructive",
       });
-      return;
+    } finally {
+      setLoading(false);
     }
+  };
 
-    toast({
-      title: "Success",
-      description: `Service ${service?.id ? "updated" : "created"} successfully`,
-    });
-    onClose();
+  const handleIconChange = (value: string) => {
+    setFormData({ ...formData, icon: value });
   };
 
   return (
@@ -93,15 +115,22 @@ const ServiceForm = ({ service, onClose }: ServiceFormProps) => {
         </div>
 
         <div>
-          <Label htmlFor="icon">Icon (Lucide icon name)</Label>
-          <Input
-            id="icon"
-            value={formData.icon}
-            onChange={(e) =>
-              setFormData({ ...formData, icon: e.target.value })
-            }
-            placeholder="e.g., Home, Settings, User"
-          />
+          <Label htmlFor="icon">Icon</Label>
+          <Select value={formData.icon} onValueChange={handleIconChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select an icon" />
+            </SelectTrigger>
+            <SelectContent>
+              {iconOptions.map((option) => (
+                <SelectItem key={option.name} value={option.name} className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
+                    <option.icon className="h-4 w-4" />
+                    <span>{option.name}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div>
