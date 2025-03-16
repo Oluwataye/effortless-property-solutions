@@ -8,11 +8,13 @@ import PropertyImageSelectors from "./PropertyImageSelectors";
 interface PropertyFormProps {
   onSuccess: () => void;
   onCancel: () => void;
+  property?: any; // The property to edit (if editing)
 }
 
-const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
+const PropertyForm = ({ onSuccess, onCancel, property }: PropertyFormProps) => {
   const { formData, handleFormDataChange, handleImageChange, handleSubmit } = usePropertyForm({
     onSuccess,
+    property,
   });
 
   return (
@@ -31,7 +33,7 @@ const PropertyForm = ({ onSuccess, onCancel }: PropertyFormProps) => {
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit">Add Property</Button>
+        <Button type="submit">{property ? "Update" : "Add"} Property</Button>
       </div>
     </form>
   );

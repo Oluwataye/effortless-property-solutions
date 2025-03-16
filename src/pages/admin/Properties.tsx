@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +19,8 @@ import PropertyList from "@/components/admin/properties/PropertyList";
 const Properties = () => {
   const { toast } = useToast();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState(null);
 
   const { data: properties, refetch } = useQuery({
     queryKey: ["properties"],
@@ -55,6 +58,11 @@ const Properties = () => {
     }
   };
 
+  const handleEdit = (property: any) => {
+    setSelectedProperty(property);
+    setIsEditDialogOpen(true);
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -82,10 +90,29 @@ const Properties = () => {
           </Dialog>
         </div>
 
+        {/* Edit Property Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Property</DialogTitle>
+            </DialogHeader>
+            {selectedProperty && (
+              <PropertyForm
+                property={selectedProperty}
+                onSuccess={() => {
+                  setIsEditDialogOpen(false);
+                  refetch();
+                }}
+                onCancel={() => setIsEditDialogOpen(false)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
         <PropertyList
           properties={properties || []}
           onDelete={handleDelete}
-          onEdit={() => {}}
+          onEdit={handleEdit}
         />
       </div>
     </AdminLayout>
