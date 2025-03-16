@@ -2,7 +2,6 @@
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useBlogPosts } from "@/hooks/use-blog-posts";
@@ -64,19 +63,10 @@ const BlogPosts = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Blog Posts</h1>
-          <PostFormDialog
-            isOpen={isAddDialogOpen}
-            onOpenChange={setIsAddDialogOpen}
-            onSuccess={refetch}
-            isEditing={false}
-          >
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Post
-              </Button>
-            </DialogTrigger>
-          </PostFormDialog>
+          <Button onClick={() => setIsAddDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Post
+          </Button>
         </div>
 
         <Card>
@@ -101,6 +91,14 @@ const BlogPosts = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Add Dialog */}
+      <PostFormDialog
+        isOpen={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        onSuccess={refetch}
+        isEditing={false}
+      />
 
       {/* Edit Dialog */}
       <PostFormDialog
