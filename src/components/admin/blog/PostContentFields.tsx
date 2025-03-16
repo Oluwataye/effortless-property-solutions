@@ -1,7 +1,7 @@
 
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
+import MarkdownPreview from "@/components/admin/blog/MarkdownPreview";
 import { Control, UseFormGetValues } from "react-hook-form";
 
 interface PostContentFieldsProps {
@@ -10,10 +10,6 @@ interface PostContentFieldsProps {
 }
 
 const PostContentFields = ({ control, getValues }: PostContentFieldsProps) => {
-  const previewContent = () => {
-    return { __html: getValues("content") };
-  };
-
   return (
     <div className="space-y-6">
       <FormField
@@ -24,7 +20,7 @@ const PostContentFields = ({ control, getValues }: PostContentFieldsProps) => {
             <FormLabel>Content</FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Write your blog post content here..."
+                placeholder="Write your blog post content here... (Markdown supported)"
                 className="min-h-[200px]"
                 {...field}
                 required
@@ -35,15 +31,7 @@ const PostContentFields = ({ control, getValues }: PostContentFieldsProps) => {
         )}
       />
 
-      <Card>
-        <CardContent className="pt-6">
-          <h3 className="text-sm font-semibold mb-2">Content Preview</h3>
-          <div 
-            className="prose prose-sm max-w-none overflow-auto max-h-[200px] p-4 bg-gray-50 rounded border"
-            dangerouslySetInnerHTML={previewContent()} 
-          />
-        </CardContent>
-      </Card>
+      <MarkdownPreview content={getValues("content")} />
     </div>
   );
 };

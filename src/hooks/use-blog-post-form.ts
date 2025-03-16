@@ -1,17 +1,21 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { blogPostsService, BlogPost } from "@/services/blog-posts-service";
 
-interface BlogPost {
-  id: string;
-  title: string;
-  content: string;
-  status: string;
-  featured_image: string | null;
-  tags: string[];
-}
+// Define validation schema
+const blogPostSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  content: z.string().min(1, "Content is required"),
+  status: z.string().default("draft"),
+  featured_image: z.string().nullable(),
+  tags: z.array(z.string())
+});
+
+export type BlogPostFormValues = z.infer<typeof blogPostSchema>;
 
 interface UseBlogPostFormProps {
   post?: BlogPost;
@@ -23,78 +27,47 @@ export const useBlogPostForm = ({ post, onSuccess }: UseBlogPostFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tagsInput, setTagsInput] = useState(post?.tags?.join(", ") || "");
 
-  const form = useForm({
+  const form = useForm<BlogPostFormValues>({
+    resolver: zodResolver(blogPostSchema),
     defaultValues: {
       title: post?.title || "",
       content: post?.content || "",
       status: post?.status || "draft",
-      featured_image: post?.featured_image || "",
+      featured_image: post?.featured_image || null,
+      tags: post?.tags || [],
     },
   });
 
-  useEffect(() => {
-    if (post) {
-      form.reset({
-        title: post.title,
-        content: post.content,
-        status: post.status,
-        featured_image: post.featured_image || "",
-      });
-      setTagsInput(post.tags?.join(", ") || "");
-    }
-  }, [post, form]);
-
-  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTagsInput(e.target.value);
+  const handleTagsChange = (value: string) => {
+    setTagsInput(value);
+    const tagsArray = value.split(",").map((tag) => tag.trim()).filter(Boolean);
+    form.setValue("tags", tagsArray);
   };
 
-  const parseTags = (tagsString: string): string[] => {
-    return tagsString
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter((tag) => tag.length > 0);
-  };
-
-  const handleSubmit = async (values: any) => {
-    setIsSubmitting(true);
+  const handleSubmit = async (values: BlogPostFormValues) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      const formData = {
-        ...values,
-        tags: parseTags(tagsInput),
-        author_id: user?.id,
-      };
-
-      let result;
+      setIsSubmitting(true);
       
       if (post?.id) {
-        // Update existing post
-        result = await supabase
-          .from("blog_posts")
-          .update(formData)
-          .eq("id", post.id);
+        await blogPostsService.updateBlogPost(post.id, values as BlogPost);
+        toast({
+          title: "Success",
+          description: "Blog post updated successfully",
+        });
       } else {
-        // Create new post
-        result = await supabase
-          .from("blog_posts")
-          .insert([formData]);
+        await blogPostsService.createBlogPost(values as BlogPost);
+        toast({
+          title: "Success",
+          description: "Blog post created successfully",
+        });
       }
-
-      if (result.error) throw result.error;
-
-      toast({
-        title: "Success",
-        description: post?.id 
-          ? "Blog post updated successfully" 
-          : "Blog post created successfully",
-      });
       
       onSuccess();
-    } catch (error: any) {
+    } catch (error) {
+      console.error("Error saving blog post:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: "Failed to save blog post",
         variant: "destructive",
       });
     } finally {
