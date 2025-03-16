@@ -15,7 +15,7 @@ const PostFormActions = ({
   onCancel, 
   isEditing, 
   onPreview,
-  showPreview = true
+  showPreview = false
 }: PostFormActionsProps) => {
   return (
     <div className="flex justify-end space-x-2">
@@ -24,10 +24,14 @@ const PostFormActions = ({
         Cancel
       </Button>
       
-      {showPreview && onPreview && (
-        <Button type="button" variant="secondary" onClick={onPreview}>
+      {onPreview && (
+        <Button 
+          type="button" 
+          variant={showPreview ? "default" : "secondary"} 
+          onClick={onPreview}
+        >
           <Eye className="mr-2 h-4 w-4" />
-          Preview
+          {showPreview ? "Hide Preview" : "Show Preview"}
         </Button>
       )}
       

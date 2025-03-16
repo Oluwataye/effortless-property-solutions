@@ -3,6 +3,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Textarea } from "@/components/ui/textarea";
 import MarkdownPreview from "@/components/admin/blog/MarkdownPreview";
 import { Control, UseFormGetValues } from "react-hook-form";
+import { useState, useEffect } from "react";
 
 interface PostContentFieldsProps {
   control: Control<any>;
@@ -10,6 +11,18 @@ interface PostContentFieldsProps {
 }
 
 const PostContentFields = ({ control, getValues }: PostContentFieldsProps) => {
+  const [content, setContent] = useState(getValues("content"));
+
+  // Update preview when content changes
+  useEffect(() => {
+    const subscription = control._subjects.watch.subscribe(({ content }) => {
+      if (content !== undefined) {
+        setContent(content);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [control._subjects.watch]);
+
   return (
     <div className="space-y-6">
       <FormField
@@ -24,6 +37,10 @@ const PostContentFields = ({ control, getValues }: PostContentFieldsProps) => {
                 className="min-h-[200px]"
                 {...field}
                 required
+                onChange={(e) => {
+                  field.onChange(e);
+                  setContent(e.target.value);
+                }}
               />
             </FormControl>
             <FormMessage />
@@ -31,7 +48,7 @@ const PostContentFields = ({ control, getValues }: PostContentFieldsProps) => {
         )}
       />
 
-      <MarkdownPreview content={getValues("content")} />
+      <MarkdownPreview content={content} />
     </div>
   );
 };

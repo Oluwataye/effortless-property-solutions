@@ -26,6 +26,7 @@ export const useBlogPostForm = ({ post, onSuccess }: UseBlogPostFormProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tagsInput, setTagsInput] = useState(post?.tags?.join(", ") || "");
+  const [showPreview, setShowPreview] = useState(false);
 
   const form = useForm<BlogPostFormValues>({
     resolver: zodResolver(blogPostSchema),
@@ -43,6 +44,10 @@ export const useBlogPostForm = ({ post, onSuccess }: UseBlogPostFormProps) => {
     setTagsInput(value);
     const tagsArray = value.split(",").map((tag) => tag.trim()).filter(Boolean);
     form.setValue("tags", tagsArray);
+  };
+
+  const togglePreview = () => {
+    setShowPreview(!showPreview);
   };
 
   const handleSubmit = async (values: BlogPostFormValues) => {
@@ -80,7 +85,9 @@ export const useBlogPostForm = ({ post, onSuccess }: UseBlogPostFormProps) => {
     form,
     isSubmitting,
     tagsInput,
+    showPreview,
     handleTagsChange,
+    togglePreview,
     handleSubmit: form.handleSubmit(handleSubmit),
   };
 };
