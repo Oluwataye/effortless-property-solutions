@@ -2,7 +2,7 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import MarkdownPreview from "@/components/admin/blog/MarkdownPreview";
-import { Control, UseFormGetValues } from "react-hook-form";
+import { Control, UseFormGetValues, useWatch } from "react-hook-form";
 import { useState, useEffect } from "react";
 
 interface PostContentFieldsProps {
@@ -11,17 +11,21 @@ interface PostContentFieldsProps {
 }
 
 const PostContentFields = ({ control, getValues }: PostContentFieldsProps) => {
-  const [content, setContent] = useState(getValues("content"));
+  const [content, setContent] = useState(getValues("content") || "");
+  
+  // Use the useWatch hook from react-hook-form instead of accessing _subjects directly
+  const watchedContent = useWatch({
+    control,
+    name: "content",
+    defaultValue: getValues("content") || ""
+  });
 
   // Update preview when content changes
   useEffect(() => {
-    const subscription = control._subjects.watch.subscribe(({ content }) => {
-      if (content !== undefined) {
-        setContent(content);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [control._subjects.watch]);
+    if (watchedContent !== undefined) {
+      setContent(watchedContent);
+    }
+  }, [watchedContent]);
 
   return (
     <div className="space-y-6">
@@ -37,10 +41,6 @@ const PostContentFields = ({ control, getValues }: PostContentFieldsProps) => {
                 className="min-h-[200px]"
                 {...field}
                 required
-                onChange={(e) => {
-                  field.onChange(e);
-                  setContent(e.target.value);
-                }}
               />
             </FormControl>
             <FormMessage />
