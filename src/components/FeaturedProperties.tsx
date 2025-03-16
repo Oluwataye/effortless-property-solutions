@@ -1,7 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { ArrowRight, Bed, Bath, SquareFootIcon } from "lucide-react";
+import { ArrowRight, Bed, Bath, Ruler } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const FeaturedProperties = () => {
@@ -59,7 +59,7 @@ const FeaturedProperties = () => {
                 <span>{property.bathrooms} baths</span>
               </div>
               <div className="flex items-center">
-                <SquareFootIcon className="h-4 w-4 mr-1" />
+                <Ruler className="h-4 w-4 mr-1" />
                 <span>{property.area} sq ft</span>
               </div>
             </div>
