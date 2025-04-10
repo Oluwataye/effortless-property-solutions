@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import PropertyForm from "@/components/admin/properties/PropertyForm";
@@ -75,36 +76,40 @@ const Properties = () => {
                 Add Property
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl max-h-[90vh]">
               <DialogHeader>
                 <DialogTitle>Add New Property</DialogTitle>
               </DialogHeader>
-              <PropertyForm
-                onSuccess={() => {
-                  setIsAddDialogOpen(false);
-                  refetch();
-                }}
-                onCancel={() => setIsAddDialogOpen(false)}
-              />
+              <ScrollArea className="max-h-[70vh] pr-4">
+                <PropertyForm
+                  onSuccess={() => {
+                    setIsAddDialogOpen(false);
+                    refetch();
+                  }}
+                  onCancel={() => setIsAddDialogOpen(false)}
+                />
+              </ScrollArea>
             </DialogContent>
           </Dialog>
         </div>
 
         {/* Edit Property Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh]">
             <DialogHeader>
               <DialogTitle>Edit Property</DialogTitle>
             </DialogHeader>
             {selectedProperty && (
-              <PropertyForm
-                property={selectedProperty}
-                onSuccess={() => {
-                  setIsEditDialogOpen(false);
-                  refetch();
-                }}
-                onCancel={() => setIsEditDialogOpen(false)}
-              />
+              <ScrollArea className="max-h-[70vh] pr-4">
+                <PropertyForm
+                  property={selectedProperty}
+                  onSuccess={() => {
+                    setIsEditDialogOpen(false);
+                    refetch();
+                  }}
+                  onCancel={() => setIsEditDialogOpen(false)}
+                />
+              </ScrollArea>
             )}
           </DialogContent>
         </Dialog>

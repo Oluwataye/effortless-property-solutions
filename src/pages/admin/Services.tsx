@@ -6,6 +6,7 @@ import ServiceForm from "@/components/admin/services/ServiceForm";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Service } from "@/hooks/use-services";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Services = () => {
   const [isAddingService, setIsAddingService] = useState(false);
@@ -40,10 +41,14 @@ const Services = () => {
         </div>
 
         {isAddingService ? (
-          <ServiceForm
-            service={editingService}
-            onClose={handleCloseForm}
-          />
+          <div className="border rounded-md p-4">
+            <ScrollArea className="max-h-[70vh] pr-4">
+              <ServiceForm
+                service={editingService}
+                onClose={handleCloseForm}
+              />
+            </ScrollArea>
+          </div>
         ) : (
           <ServicesList onEdit={handleEditService} />
         )}

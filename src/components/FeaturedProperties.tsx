@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { ArrowRight, Bed, Bath, Ruler } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const FeaturedProperties = () => {
   const { data: properties, isLoading } = useQuery({
@@ -12,8 +13,7 @@ const FeaturedProperties = () => {
         .from("properties")
         .select("*")
         .eq("status", "available")
-        .order("created_at", { ascending: false })
-        .limit(3);
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
@@ -30,9 +30,18 @@ const FeaturedProperties = () => {
     );
   }
 
+  // If no properties are available, show a message
+  if (!properties || properties.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-muted-foreground">No properties available at this time.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {properties?.map((property) => (
+      {properties.map((property) => (
         <div
           key={property.id}
           className="group relative overflow-hidden rounded-lg shadow-md transition-transform duration-300 hover:shadow-xl hover:-translate-y-1"
