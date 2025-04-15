@@ -18,6 +18,7 @@ import {
 interface ServiceFormProps {
   service?: any;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
 // Available icon options
@@ -29,7 +30,7 @@ const iconOptions = [
   { name: "DollarSign", icon: DollarSign },
 ];
 
-const ServiceForm = ({ service, onClose }: ServiceFormProps) => {
+const ServiceForm = ({ service, onClose, onSuccess }: ServiceFormProps) => {
   const [formData, setFormData] = useState({
     name: service?.name || "",
     description: service?.description || "",
@@ -58,11 +59,15 @@ const ServiceForm = ({ service, onClose }: ServiceFormProps) => {
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: `Service ${service?.id ? "updated" : "created"} successfully`,
-      });
-      onClose();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        toast({
+          title: "Success",
+          description: `Service ${service?.id ? "updated" : "created"} successfully`,
+        });
+        onClose();
+      }
     } catch (error: any) {
       toast({
         title: "Error",

@@ -25,7 +25,7 @@ const ServiceDetails = ({ service }: ServiceDetailsProps) => {
           </h3>
           <p className="text-gray-600 mb-6">{service.description}</p>
           
-          {service.price && (
+          {service.price && service.price > 0 && (
             <p className="text-xl font-semibold text-primary mb-6">
               Starting at ${service.price.toFixed(2)}
             </p>

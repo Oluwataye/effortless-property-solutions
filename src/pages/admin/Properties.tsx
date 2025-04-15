@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import PropertyList from "@/components/admin/properties/PropertyList";
 
 const Properties = () => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
@@ -50,6 +51,8 @@ const Properties = () => {
         description: "Property deleted successfully",
       });
       refetch();
+      // Also invalidate the featured properties query
+      queryClient.invalidateQueries({ queryKey: ["featured-properties"] });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -62,6 +65,14 @@ const Properties = () => {
   const handleEdit = (property: any) => {
     setSelectedProperty(property);
     setIsEditDialogOpen(true);
+  };
+
+  const handleSuccess = () => {
+    setIsAddDialogOpen(false);
+    setIsEditDialogOpen(false);
+    refetch();
+    // Also invalidate the featured properties query
+    queryClient.invalidateQueries({ queryKey: ["featured-properties"] });
   };
 
   return (
@@ -82,10 +93,7 @@ const Properties = () => {
               </DialogHeader>
               <ScrollArea className="max-h-[70vh] pr-4">
                 <PropertyForm
-                  onSuccess={() => {
-                    setIsAddDialogOpen(false);
-                    refetch();
-                  }}
+                  onSuccess={handleSuccess}
                   onCancel={() => setIsAddDialogOpen(false)}
                 />
               </ScrollArea>
@@ -103,10 +111,7 @@ const Properties = () => {
               <ScrollArea className="max-h-[70vh] pr-4">
                 <PropertyForm
                   property={selectedProperty}
-                  onSuccess={() => {
-                    setIsEditDialogOpen(false);
-                    refetch();
-                  }}
+                  onSuccess={handleSuccess}
                   onCancel={() => setIsEditDialogOpen(false)}
                 />
               </ScrollArea>

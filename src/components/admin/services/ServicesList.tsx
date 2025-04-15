@@ -1,6 +1,4 @@
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
   Table,
@@ -13,43 +11,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash } from "lucide-react";
 import { Service } from "@/hooks/use-services";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ServicesListProps {
+  services: Service[];
   onEdit: (service: Service) => void;
+  isLoading?: boolean;
+  onRefetch: () => void;
 }
 
-const ServicesList = ({ onEdit }: ServicesListProps) => {
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
+const ServicesList = ({ services, onEdit, isLoading = false, onRefetch }: ServicesListProps) => {
   const { toast } = useToast();
-
-  const fetchServices = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from("services")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        throw error;
-      }
-
-      setServices(data || []);
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: `Failed to fetch services: ${error.message}`,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchServices();
-  }, []);
 
   const handleDelete = async (id: string) => {
     try {
@@ -63,7 +35,7 @@ const ServicesList = ({ onEdit }: ServicesListProps) => {
         title: "Success",
         description: "Service deleted successfully",
       });
-      fetchServices(); // Refresh the list after delete
+      onRefetch(); // Refresh the list after delete
     } catch (error: any) {
       toast({
         title: "Error",
@@ -74,7 +46,7 @@ const ServicesList = ({ onEdit }: ServicesListProps) => {
   };
 
   return (
-    <div className={`rounded-md border ${loading ? 'opacity-70' : ''}`}>
+    <div className={`rounded-md border ${isLoading ? 'opacity-70' : ''}`}>
       <Table>
         <TableHeader>
           <TableRow>
@@ -86,7 +58,7 @@ const ServicesList = ({ onEdit }: ServicesListProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {services.length === 0 && !loading ? (
+          {services.length === 0 && !isLoading ? (
             <TableRow>
               <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                 No services found. Add your first service to get started.

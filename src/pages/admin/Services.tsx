@@ -7,10 +7,29 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Service } from "@/hooks/use-services";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Services = () => {
   const [isAddingService, setIsAddingService] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Use React Query to fetch services
+  const { data: services, isLoading } = useQuery({
+    queryKey: ["admin-services"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("services")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const handleAddNew = () => {
     setIsAddingService(true);
@@ -25,6 +44,17 @@ const Services = () => {
   const handleCloseForm = () => {
     setIsAddingService(false);
     setEditingService(null);
+  };
+
+  const handleSuccess = () => {
+    toast({
+      title: "Success",
+      description: `Service ${editingService ? "updated" : "created"} successfully`,
+    });
+    handleCloseForm();
+    // Refresh the services list and other related queries
+    queryClient.invalidateQueries({ queryKey: ["admin-services"] });
+    queryClient.invalidateQueries({ queryKey: ["services"] });
   };
 
   return (
@@ -46,11 +76,17 @@ const Services = () => {
               <ServiceForm
                 service={editingService}
                 onClose={handleCloseForm}
+                onSuccess={handleSuccess}
               />
             </ScrollArea>
           </div>
         ) : (
-          <ServicesList onEdit={handleEditService} />
+          <ServicesList 
+            services={services || []} 
+            onEdit={handleEditService} 
+            isLoading={isLoading}
+            onRefetch={() => queryClient.invalidateQueries({ queryKey: ["admin-services"] })}
+          />
         )}
       </div>
     </AdminLayout>

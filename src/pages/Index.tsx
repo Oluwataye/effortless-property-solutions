@@ -14,7 +14,15 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
-const queryClient = new QueryClient();
+// Use the same query client configuration as in App.tsx for consistency
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 const Index = () => {
   return (

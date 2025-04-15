@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Building2, Home, Key, Construction, DollarSign } from "lucide-react";
-import { Icon } from "lucide-react";
 import ServiceSelector from "./ServiceSelector";
 import ServiceDetails from "./ServiceDetails";
 
