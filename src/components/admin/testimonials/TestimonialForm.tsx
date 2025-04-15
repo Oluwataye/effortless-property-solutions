@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Testimonial, TestimonialFormData } from "@/types/testimonial";
+import MediaSelector from "@/components/admin/media/MediaSelector";
 
 interface TestimonialFormProps {
   testimonial?: Testimonial;
@@ -14,6 +15,7 @@ interface TestimonialFormProps {
 
 export function TestimonialForm({ testimonial, onSubmit, onCancel }: TestimonialFormProps) {
   const isEditMode = !!testimonial;
+  const [photoUrl, setPhotoUrl] = useState(testimonial?.photo_url || '');
   
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,7 +25,7 @@ export function TestimonialForm({ testimonial, onSubmit, onCancel }: Testimonial
       name: formData.get('name') as string,
       content: formData.get('content') as string,
       rating: Number(formData.get('rating')),
-      photo_url: formData.get('photo_url') as string || undefined,
+      photo_url: photoUrl,
     };
 
     if (isEditMode) {
@@ -73,15 +75,13 @@ export function TestimonialForm({ testimonial, onSubmit, onCancel }: Testimonial
           />
         </div>
         <div>
-          <label htmlFor={`${isEditMode ? 'edit-' : ''}photo_url`} className="text-sm font-medium">
-            Photo URL (optional)
+          <label className="text-sm font-medium block mb-2">
+            Profile Photo
           </label>
-          <Input
-            id={`${isEditMode ? 'edit-' : ''}photo_url`}
-            name="photo_url"
-            type="url"
-            defaultValue={testimonial?.photo_url}
-            placeholder="https://example.com/image.jpg"
+          <MediaSelector
+            value={photoUrl}
+            onChange={setPhotoUrl}
+            fieldName={`testimonial-photo-${isEditMode ? testimonial.id : 'new'}`}
           />
         </div>
         {isEditMode && (

@@ -18,13 +18,13 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
   return (
     <div className="w-full flex-shrink-0 px-4">
       <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-        <Avatar className="w-20 h-20 mx-auto mb-4">
+        <Avatar className="w-20 h-20 mx-auto mb-4 overflow-hidden">
           <AvatarImage 
             src={testimonial.image} 
             alt={testimonial.name}
-            className="object-cover"
+            className="object-cover w-full h-full"
           />
-          <AvatarFallback>{getInitials(testimonial.name)}</AvatarFallback>
+          <AvatarFallback className="text-lg">{getInitials(testimonial.name)}</AvatarFallback>
         </Avatar>
         <p className="text-lg text-gray-600 mb-6 italic">
           "{testimonial.content}"
