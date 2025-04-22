@@ -1,172 +1,149 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { supabase } from "@/integrations/supabase/client";
+
+const formSchema = z.object({
+  openai_api_key: z.string().optional(),
+  perplexity_api_key: z.string().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 const ChatbotSettings = () => {
   const { toast } = useToast();
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState({
-    enabled: true,
-    model: "gpt-4o",
-    temperature: 0.7,
-    autoSave: true,
-    welcomeMessage: "Hello! I'm your real estate assistant. How can I help you today?"
+  const [loading, setLoading] = useState(false);
+  
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      openai_api_key: "",
+      perplexity_api_key: "",
+    },
   });
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("website_settings")
-          .select("*")
-          .eq("setting_key", "chatbot_settings")
-          .single();
-
-        if (error) {
-          console.error("Error fetching chatbot settings:", error);
-          return;
-        }
-
-        if (data && data.setting_value) {
-          setSettings(data.setting_value as any);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSettings();
-  }, []);
-
-  const handleSaveSettings = async () => {
-    setSaving(true);
+  
+  const onSubmit = async (data: FormValues) => {
+    setLoading(true);
+    
     try {
-      const { data, error } = await supabase
-        .from("website_settings")
-        .upsert(
-          {
-            setting_key: "chatbot_settings",
-            setting_value: settings
+      // For each API key that has a value, update the secret
+      if (data.openai_api_key && data.openai_api_key.trim() !== "") {
+        const { error: openaiError } = await supabase.functions.invoke("update-secret", {
+          body: {
+            name: "OPENAI_API_KEY",
+            value: data.openai_api_key.trim(),
           },
-          { onConflict: "setting_key" }
-        );
-
-      if (error) {
-        toast({
-          title: "Error",
-          description: "Failed to save settings",
-          variant: "destructive",
         });
-        console.error("Error saving settings:", error);
-      } else {
-        toast({
-          title: "Success",
-          description: "Chatbot settings saved successfully",
-        });
+        
+        if (openaiError) {
+          throw new Error(`Failed to update OpenAI API key: ${openaiError.message}`);
+        }
       }
-    } catch (error) {
-      console.error("Error:", error);
+      
+      if (data.perplexity_api_key && data.perplexity_api_key.trim() !== "") {
+        const { error: perplexityError } = await supabase.functions.invoke("update-secret", {
+          body: {
+            name: "PERPLEXITY_API_KEY",
+            value: data.perplexity_api_key.trim(),
+          },
+        });
+        
+        if (perplexityError) {
+          throw new Error(`Failed to update Perplexity API key: ${perplexityError.message}`);
+        }
+      }
+      
+      toast({
+        title: "Settings updated",
+        description: "Chatbot API keys have been updated successfully.",
+      });
+      
+      // Reset form values to empty strings after successful submission
+      form.reset({
+        openai_api_key: "",
+        perplexity_api_key: "",
+      });
+      
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update chatbot settings",
+        variant: "destructive",
+      });
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Chatbot Configuration</CardTitle>
-          <CardDescription>Configure your customer support chatbot settings</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="chatbot-enabled" className="text-base">Enable Chatbot</Label>
-              <p className="text-sm text-muted-foreground">Show the chatbot widget on your website</p>
-            </div>
-            <Switch
-              id="chatbot-enabled"
-              checked={settings.enabled}
-              onCheckedChange={(checked) => setSettings({ ...settings, enabled: checked })}
+    <Card>
+      <CardHeader>
+        <CardTitle>Chatbot API Settings</CardTitle>
+        <CardDescription>
+          Configure the AI services used by your chatbot. You can use OpenAI, Perplexity, or both (with OpenAI as primary and Perplexity as fallback).
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="openai_api_key"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>OpenAI API Key</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="sk-..." 
+                      type="password" 
+                      autoComplete="off" 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Enter your OpenAI API key for the primary chatbot functionality.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="model-select">AI Model</Label>
-            <Select
-              value={settings.model}
-              onValueChange={(value) => setSettings({ ...settings, model: value })}
-            >
-              <SelectTrigger id="model-select">
-                <SelectValue placeholder="Select model" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="gpt-4o">GPT-4o (Most capable)</SelectItem>
-                <SelectItem value="gpt-4o-mini">GPT-4o-mini (Faster, cheaper)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <Label htmlFor="temperature-slider">Response Creativity: {settings.temperature.toFixed(1)}</Label>
-            </div>
-            <Slider
-              id="temperature-slider"
-              min={0}
-              max={1}
-              step={0.1}
-              value={[settings.temperature]}
-              onValueChange={(value) => setSettings({ ...settings, temperature: value[0] })}
+            
+            <FormField
+              control={form.control}
+              name="perplexity_api_key"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Perplexity API Key</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="pplx-..." 
+                      type="password" 
+                      autoComplete="off" 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Enter your Perplexity API key as a fallback option if OpenAI fails.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Precise</span>
-              <span>Creative</span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="autosave-conversations" className="text-base">Auto-save Conversations</Label>
-              <p className="text-sm text-muted-foreground">Store chat history for later review</p>
-            </div>
-            <Switch
-              id="autosave-conversations"
-              checked={settings.autoSave}
-              onCheckedChange={(checked) => setSettings({ ...settings, autoSave: checked })}
-            />
-          </div>
-
-          <Button 
-            className="w-full" 
-            onClick={handleSaveSettings} 
-            disabled={saving}
-          >
-            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Settings
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+            
+            <Button type="submit" disabled={loading}>
+              {loading ? "Saving..." : "Save API Settings"}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 };
 

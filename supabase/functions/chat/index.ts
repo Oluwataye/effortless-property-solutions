@@ -16,6 +16,11 @@ serve(async (req) => {
   try {
     const { message, conversationId } = await req.json()
 
+    // For service-related queries, let's add special handling to ensure they work
+    const isServiceQuery = message.toLowerCase().includes('service') || 
+                          message.toLowerCase().includes('offer') ||
+                          message.toLowerCase().includes('provide')
+    
     // Get relevant knowledge from the database
     const relevantKnowledge = await fetchRelevantKnowledge(message)
     
@@ -25,9 +30,32 @@ serve(async (req) => {
     const testimonials = await fetchCompanyTestimonials()
     
     // Build system message with company context
-    const systemMessage = buildSystemMessage(services, projects, testimonials, relevantKnowledge)
+    let systemMessage = buildSystemMessage(services, projects, testimonials, relevantKnowledge)
     
-    // Call OpenAI API
+    // For service-related queries, add extra context to ensure they're answered properly
+    if (isServiceQuery && services) {
+      systemMessage += "\n\nIMPORTANT: If asked about services, prioritize providing an informative response about the company's services. "
+      systemMessage += "Here are the available services again in a clear format:\n"
+      
+      if (services && services.length > 0) {
+        services.forEach((service, index) => {
+          systemMessage += `Service ${index + 1}: ${service.name} - ${service.description}`
+          if (service.price) {
+            systemMessage += ` (Price: $${service.price})`
+          }
+          systemMessage += "\n"
+        })
+      } else {
+        // Backup service information in case database lookup failed
+        systemMessage += "- Facility Management: Comprehensive facility management solutions for property efficiency.\n"
+        systemMessage += "- Real Estate Management: Professional property management services.\n"
+        systemMessage += "- Property Buying: Expert guidance throughout property acquisition.\n"
+        systemMessage += "- Property Development: End-to-end property development services.\n"
+        systemMessage += "- Property Selling: Strategic property marketing and sales services.\n"
+      }
+    }
+    
+    // Call AI API (OpenAI with fallback to Perplexity)
     const result = await callOpenAI(message, systemMessage)
     
     // Store message in database if there's a conversation ID
