@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +5,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Testimonial, TestimonialFormData } from "@/types/testimonial";
 import MediaSelector from "@/components/admin/media/MediaSelector";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface TestimonialFormProps {
   testimonial?: Testimonial;
@@ -16,6 +22,7 @@ interface TestimonialFormProps {
 export function TestimonialForm({ testimonial, onSubmit, onCancel }: TestimonialFormProps) {
   const isEditMode = !!testimonial;
   const [photoUrl, setPhotoUrl] = useState(testimonial?.photo_url || '');
+  const [relationshipStatus, setRelationshipStatus] = useState(testimonial?.relationship_status || 'Client');
   
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,6 +33,7 @@ export function TestimonialForm({ testimonial, onSubmit, onCancel }: Testimonial
       content: formData.get('content') as string,
       rating: Number(formData.get('rating')),
       photo_url: photoUrl,
+      relationship_status: relationshipStatus,
     };
 
     if (isEditMode) {
@@ -48,6 +56,23 @@ export function TestimonialForm({ testimonial, onSubmit, onCancel }: Testimonial
             defaultValue={testimonial?.name}
             required 
           />
+        </div>
+        <div>
+          <label htmlFor="relationship-status" className="text-sm font-medium block mb-2">
+            Relationship to Company
+          </label>
+          <Select value={relationshipStatus} onValueChange={setRelationshipStatus}>
+            <SelectTrigger id="relationship-status">
+              <SelectValue placeholder="Select relationship" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Client">Client</SelectItem>
+              <SelectItem value="Developer">Developer</SelectItem>
+              <SelectItem value="Engineer">Engineer</SelectItem>
+              <SelectItem value="Partner">Partner</SelectItem>
+              <SelectItem value="Vendor">Vendor</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <label htmlFor={`${isEditMode ? 'edit-' : ''}content`} className="text-sm font-medium">

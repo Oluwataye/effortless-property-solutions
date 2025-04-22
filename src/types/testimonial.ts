@@ -6,6 +6,7 @@ export interface Testimonial {
   rating: number;
   status: string;
   photo_url?: string;
+  relationship_status: string;
 }
 
 export interface TestimonialFormData {
@@ -14,4 +15,5 @@ export interface TestimonialFormData {
   rating: number;
   photo_url?: string;
   status?: string;
+  relationship_status: string;
 }

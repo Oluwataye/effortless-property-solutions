@@ -38,7 +38,7 @@ const TestimonialsSection = () => {
     : testimonials.map(t => ({
         id: t.id,
         name: t.name,
-        position: "Client", // Default position if not available in DB
+        position: t.relationship_status, // Use the relationship status here
         image: t.photo_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80",
         content: t.content,
         rating: t.rating || 5

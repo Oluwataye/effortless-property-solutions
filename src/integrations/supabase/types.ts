@@ -390,6 +390,7 @@ export type Database = {
           name: string
           photo_url: string | null
           rating: number | null
+          relationship_status: string
           status: string | null
           updated_at: string | null
         }
@@ -400,6 +401,7 @@ export type Database = {
           name: string
           photo_url?: string | null
           rating?: number | null
+          relationship_status: string
           status?: string | null
           updated_at?: string | null
         }
@@ -410,6 +412,7 @@ export type Database = {
           name?: string
           photo_url?: string | null
           rating?: number | null
+          relationship_status?: string
           status?: string | null
           updated_at?: string | null
         }
