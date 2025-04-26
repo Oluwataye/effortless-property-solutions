@@ -1,3 +1,4 @@
+
 import { User } from "@/types/user";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,9 +14,26 @@ import { Trash2 } from "lucide-react";
 interface UserListProps {
   users: User[];
   onDeleteUser: (userId: string) => void;
+  loading: boolean;
 }
 
-const UserList = ({ users, onDeleteUser }: UserListProps) => {
+const UserList = ({ users, onDeleteUser, loading }: UserListProps) => {
+  if (loading) {
+    return (
+      <div className="rounded-md border p-8 text-center">
+        <p className="text-muted-foreground">Loading users...</p>
+      </div>
+    );
+  }
+
+  if (users.length === 0) {
+    return (
+      <div className="rounded-md border p-8 text-center">
+        <p className="text-muted-foreground">No users found. Add your first user to get started.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-md border">
       <Table>

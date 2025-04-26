@@ -1,3 +1,4 @@
+
 import { NewUser } from "@/types/user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,9 +23,10 @@ import { useState } from "react";
 
 interface AddUserDialogProps {
   onAddUser: (user: NewUser) => Promise<void>;
+  isCreating: boolean;
 }
 
-const AddUserDialog = ({ onAddUser }: AddUserDialogProps) => {
+const AddUserDialog = ({ onAddUser, isCreating }: AddUserDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [newUser, setNewUser] = useState<NewUser>({
     email: "",
@@ -34,6 +36,8 @@ const AddUserDialog = ({ onAddUser }: AddUserDialogProps) => {
 
   const handleSubmit = async () => {
     await onAddUser(newUser);
+    // Only close and reset if operation was successful
+    // The parent component will handle errors
     setIsOpen(false);
     setNewUser({ email: "", password: "", role: "editor" });
   };
@@ -94,7 +98,9 @@ const AddUserDialog = ({ onAddUser }: AddUserDialogProps) => {
           <Button variant="outline" onClick={() => setIsOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit}>Add User</Button>
+          <Button onClick={handleSubmit} disabled={isCreating}>
+            {isCreating ? "Creating..." : "Add User"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
