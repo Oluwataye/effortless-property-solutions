@@ -2,7 +2,7 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { AppearanceSettings } from "@/hooks/use-appearance-settings";
+import { AppearanceSettings } from "@/types/settings";
 
 interface EffectsSectionProps {
   settings: AppearanceSettings;

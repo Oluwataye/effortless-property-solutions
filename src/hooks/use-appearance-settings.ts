@@ -2,57 +2,17 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-export interface AppearanceSettings {
-  theme: {
-    mode: "light" | "dark" | "system";
-    primaryColor: string;
-    radius: "none" | "small" | "medium" | "large";
-  };
-  font: {
-    family: string;
-    headingFamily: string;
-    baseSize: number;
-  };
-  border: {
-    width: number;
-    style: string;
-    color: string;
-  };
-  style: {
-    buttonStyle: "default" | "outline" | "ghost";
-    cardShadow: "none" | "small" | "medium" | "large";
-  };
-  effects: {
-    animations: boolean;
-    transitions: boolean;
-  };
-}
+import { AppearanceSettings } from "@/types/settings";
 
 export const defaultAppearanceSettings: AppearanceSettings = {
-  theme: {
-    mode: "system",
-    primaryColor: "#0077FF",
-    radius: "medium"
-  },
-  font: {
-    family: "Inter, sans-serif",
-    headingFamily: "Inter, sans-serif",
-    baseSize: 16
-  },
-  border: {
-    width: 1,
-    style: "solid",
-    color: "#e2e8f0"
-  },
-  style: {
-    buttonStyle: "default",
-    cardShadow: "medium"
-  },
-  effects: {
-    animations: true,
-    transitions: true
-  }
+  theme: "system",
+  colorScheme: "blue",
+  fontSize: 16,
+  borderRadius: 8,
+  cardStyle: "flat",
+  menuStyle: "sidebar",
+  enableAnimations: true,
+  showShadows: true
 };
 
 export const useAppearanceSettings = () => {

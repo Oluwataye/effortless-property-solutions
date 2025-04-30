@@ -2,7 +2,7 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AppearanceSettings } from "@/hooks/use-appearance-settings";
+import { AppearanceSettings } from "@/types/settings";
 
 interface StyleSectionProps {
   settings: AppearanceSettings;
@@ -19,7 +19,7 @@ export const StyleSection: React.FC<StyleSectionProps> = ({
         <Label htmlFor="card-style-select">Card Style</Label>
         <Select
           value={settings.cardStyle}
-          onValueChange={(value) => onChange({ ...settings, cardStyle: value })}
+          onValueChange={(value: "flat" | "raised" | "bordered") => onChange({ ...settings, cardStyle: value })}
         >
           <SelectTrigger id="card-style-select">
             <SelectValue placeholder="Select card style" />
@@ -36,7 +36,7 @@ export const StyleSection: React.FC<StyleSectionProps> = ({
         <Label htmlFor="menu-style-select">Menu Style</Label>
         <Select
           value={settings.menuStyle}
-          onValueChange={(value) => onChange({ ...settings, menuStyle: value })}
+          onValueChange={(value: "sidebar" | "topbar" | "hamburger") => onChange({ ...settings, menuStyle: value })}
         >
           <SelectTrigger id="menu-style-select">
             <SelectValue placeholder="Select menu style" />
