@@ -4,32 +4,62 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export interface AppearanceSettings {
-  theme: string;
-  colorScheme: string;
-  fontSize: number;
-  enableAnimations: boolean;
-  borderRadius: number;
-  cardStyle: string;
-  showShadows: boolean;
-  menuStyle: string;
+  theme: {
+    mode: "light" | "dark" | "system";
+    primaryColor: string;
+    radius: "none" | "small" | "medium" | "large";
+  };
+  font: {
+    family: string;
+    headingFamily: string;
+    baseSize: number;
+  };
+  border: {
+    width: number;
+    style: string;
+    color: string;
+  };
+  style: {
+    buttonStyle: "default" | "outline" | "ghost";
+    cardShadow: "none" | "small" | "medium" | "large";
+  };
+  effects: {
+    animations: boolean;
+    transitions: boolean;
+  };
 }
 
-export const defaultSettings: AppearanceSettings = {
-  theme: "light",
-  colorScheme: "blue",
-  fontSize: 16,
-  enableAnimations: true,
-  borderRadius: 8,
-  cardStyle: "flat",
-  showShadows: true,
-  menuStyle: "sidebar"
+export const defaultAppearanceSettings: AppearanceSettings = {
+  theme: {
+    mode: "system",
+    primaryColor: "#0077FF",
+    radius: "medium"
+  },
+  font: {
+    family: "Inter, sans-serif",
+    headingFamily: "Inter, sans-serif",
+    baseSize: 16
+  },
+  border: {
+    width: 1,
+    style: "solid",
+    color: "#e2e8f0"
+  },
+  style: {
+    buttonStyle: "default",
+    cardShadow: "medium"
+  },
+  effects: {
+    animations: true,
+    transitions: true
+  }
 };
 
 export const useAppearanceSettings = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState<AppearanceSettings>(defaultSettings);
+  const [settings, setSettings] = useState<AppearanceSettings>(defaultAppearanceSettings);
 
   useEffect(() => {
     fetchSettings();
@@ -50,7 +80,10 @@ export const useAppearanceSettings = () => {
       }
 
       if (data && data.setting_value) {
-        setSettings(data.setting_value as unknown as AppearanceSettings);
+        setSettings({
+          ...defaultAppearanceSettings,
+          ...(data.setting_value as any)
+        });
       }
     } catch (error) {
       console.error("Error:", error);

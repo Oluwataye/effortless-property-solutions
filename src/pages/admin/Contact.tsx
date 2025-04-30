@@ -16,7 +16,8 @@ const Contact = () => {
     searchQuery, 
     setSearchQuery, 
     markAsRead,
-    deleteMessage 
+    deleteMessage,
+    refreshMessages 
   } = useContactMessages();
   
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
@@ -50,6 +51,9 @@ const Contact = () => {
       if (selectedMessage && selectedMessage.id === messageToDelete) {
         setSelectedMessage(null);
       }
+      
+      // Refresh the messages list
+      await refreshMessages();
     }
     
     setMessageToDelete(null);

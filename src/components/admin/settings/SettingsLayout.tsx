@@ -1,7 +1,8 @@
 
 import React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2 } from "lucide-react";
 
 interface SettingsLayoutProps {
@@ -9,8 +10,8 @@ interface SettingsLayoutProps {
   description: string;
   loading: boolean;
   saving: boolean;
-  saveSettings: () => void;
-  saveButtonText: string;
+  saveSettings: () => Promise<void>;
+  saveButtonText?: string;
   children: React.ReactNode;
 }
 
@@ -20,38 +21,48 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({
   loading,
   saving,
   saveSettings,
-  saveButtonText,
-  children,
+  saveButtonText = "Save Changes",
+  children
 }) => {
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-40">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-8 w-1/3" />
+          <Skeleton className="h-4 w-1/2" />
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="h-4 w-1/4" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {children}
-          
-          <Button 
-            className="w-full" 
-            onClick={saveSettings} 
-            disabled={saving}
-          >
-            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {saveButtonText}
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {children}
+      </CardContent>
+      <CardFooter className="border-t pt-6">
+        <Button 
+          onClick={saveSettings} 
+          disabled={saving}
+          className="ml-auto"
+        >
+          {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {saving ? "Saving..." : saveButtonText}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 

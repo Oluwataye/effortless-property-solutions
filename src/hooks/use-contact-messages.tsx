@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ContactMessage } from "@/types/contact";
@@ -10,7 +10,7 @@ export function useContactMessages() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase
@@ -20,7 +20,7 @@ export function useContactMessages() {
 
       if (error) throw error;
       setMessages(data as ContactMessage[]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching contact messages:", error);
       toast({
         title: "Error",
@@ -30,11 +30,11 @@ export function useContactMessages() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchMessages();
-  }, []);
+  }, [fetchMessages]);
 
   const markAsRead = async (messageId: string) => {
     try {
@@ -49,8 +49,16 @@ export function useContactMessages() {
       setMessages(messages.map(msg => 
         msg.id === messageId ? { ...msg, read: true } : msg
       ));
-    } catch (error) {
+      
+      return true;
+    } catch (error: any) {
       console.error("Error marking message as read:", error);
+      toast({
+        title: "Error",
+        description: "Failed to mark message as read",
+        variant: "destructive",
+      });
+      return false;
     }
   };
 
@@ -72,7 +80,7 @@ export function useContactMessages() {
       });
       
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting message:", error);
       toast({
         title: "Error",
@@ -83,12 +91,15 @@ export function useContactMessages() {
     }
   };
 
-  const filteredMessages = messages.filter(message => 
-    message.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    message.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    message.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    message.message.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter messages based on search query
+  const filteredMessages = searchQuery.trim() === "" 
+    ? messages 
+    : messages.filter(message => 
+        message.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        message.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        message.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        message.message.toLowerCase().includes(searchQuery.toLowerCase())
+      );
 
   return {
     messages: filteredMessages,
