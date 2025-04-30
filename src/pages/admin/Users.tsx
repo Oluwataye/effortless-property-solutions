@@ -86,7 +86,11 @@ const UsersPage = () => {
       if (searchError) throw searchError;
       
       // Find user with matching email manually
-      const existingUser = existingUsers.users.find(user => user.email === newUser.email);
+      // Properly type the users array and use type assertion to fix the TS error
+      const existingUser = existingUsers.users.find((user: { email?: string }) => 
+        user.email === newUser.email
+      );
+      
       let userId;
       
       // If user exists, use their ID
