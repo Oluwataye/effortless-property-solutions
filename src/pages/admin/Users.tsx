@@ -80,19 +80,18 @@ const UsersPage = () => {
       setIsCreating(true);
       
       // First check if the user already exists
-      const { data: existingUsers, error: searchError } = await supabase.auth.admin.listUsers({
-        filter: {
-          email: newUser.email
-        }
-      });
+      // Use a different approach than filter to check if user exists
+      const { data: existingUsers, error: searchError } = await supabase.auth.admin.listUsers();
       
       if (searchError) throw searchError;
       
+      // Find user with matching email manually
+      const existingUser = existingUsers.users.find(user => user.email === newUser.email);
       let userId;
       
       // If user exists, use their ID
-      if (existingUsers.users && existingUsers.users.length > 0) {
-        userId = existingUsers.users[0].id;
+      if (existingUser) {
+        userId = existingUser.id;
         
         // Check if this user already has a role
         const { data: existingRole } = await supabase
