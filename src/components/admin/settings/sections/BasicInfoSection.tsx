@@ -2,11 +2,11 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { WebsiteSettings } from "@/hooks/use-website-settings";
+import { WebsiteSettings } from "@/types/settings";
 
 interface BasicInfoSectionProps {
   settings: WebsiteSettings;
-  onChange: (settings: WebsiteSettings) => void;
+  onChange: React.Dispatch<React.SetStateAction<WebsiteSettings>>;
 }
 
 export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
@@ -20,7 +20,16 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
         <Input
           id="site-name"
           value={settings.siteName}
-          onChange={(e) => onChange({ ...settings, siteName: e.target.value })}
+          onChange={(e) => onChange(prev => ({ ...prev, siteName: e.target.value }))}
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="site-description">Website Description</Label>
+        <Input
+          id="site-description"
+          value={settings.siteDescription}
+          onChange={(e) => onChange(prev => ({ ...prev, siteDescription: e.target.value }))}
         />
       </div>
       
@@ -30,7 +39,7 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           id="contact-email"
           type="email"
           value={settings.contactEmail}
-          onChange={(e) => onChange({ ...settings, contactEmail: e.target.value })}
+          onChange={(e) => onChange(prev => ({ ...prev, contactEmail: e.target.value }))}
         />
       </div>
       
@@ -38,8 +47,8 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
         <Label htmlFor="contact-phone">Contact Phone</Label>
         <Input
           id="contact-phone"
-          value={settings.contactPhone}
-          onChange={(e) => onChange({ ...settings, contactPhone: e.target.value })}
+          value={settings.phoneNumber}
+          onChange={(e) => onChange(prev => ({ ...prev, phoneNumber: e.target.value }))}
         />
       </div>
       
@@ -48,7 +57,7 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
         <Input
           id="address"
           value={settings.address}
-          onChange={(e) => onChange({ ...settings, address: e.target.value })}
+          onChange={(e) => onChange(prev => ({ ...prev, address: e.target.value }))}
         />
       </div>
     </div>

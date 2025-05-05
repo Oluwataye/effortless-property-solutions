@@ -2,11 +2,11 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { WebsiteSettings } from "@/hooks/use-website-settings";
+import { WebsiteSettings } from "@/types/settings";
 
 interface SocialMediaSectionProps {
   settings: WebsiteSettings;
-  onChange: (settings: WebsiteSettings) => void;
+  onChange: React.Dispatch<React.SetStateAction<WebsiteSettings>>;
 }
 
 export const SocialMediaSection: React.FC<SocialMediaSectionProps> = ({
@@ -14,13 +14,13 @@ export const SocialMediaSection: React.FC<SocialMediaSectionProps> = ({
   onChange
 }) => {
   const updateSocialLink = (platform: keyof WebsiteSettings['socialLinks'], value: string) => {
-    onChange({
-      ...settings,
+    onChange(prev => ({
+      ...prev,
       socialLinks: {
-        ...settings.socialLinks,
+        ...prev.socialLinks,
         [platform]: value
       }
-    });
+    }));
   };
 
   return (
@@ -60,6 +60,15 @@ export const SocialMediaSection: React.FC<SocialMediaSectionProps> = ({
             id="linkedin"
             value={settings.socialLinks.linkedin}
             onChange={(e) => updateSocialLink('linkedin', e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="youtube">YouTube</Label>
+          <Input
+            id="youtube"
+            value={settings.socialLinks.youtube}
+            onChange={(e) => updateSocialLink('youtube', e.target.value)}
           />
         </div>
       </div>

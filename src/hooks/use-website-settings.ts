@@ -2,36 +2,23 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-export interface WebsiteSettings {
-  siteName: string;
-  contactEmail: string;
-  contactPhone: string;
-  address: string;
-  footerText: string;
-  logoUrl: string;
-  faviconUrl: string;
-  socialLinks: {
-    facebook: string;
-    twitter: string;
-    instagram: string;
-    linkedin: string;
-  };
-}
+import { WebsiteSettings } from "@/types/settings";
 
 export const defaultSettings: WebsiteSettings = {
   siteName: "Real Estate Website",
+  siteDescription: "Modern real estate solutions for your property needs",
   contactEmail: "contact@example.com",
-  contactPhone: "+1 234 567 8901",
+  phoneNumber: "+1 234 567 8901",
   address: "123 Main St, City, Country",
   footerText: "© 2024 Real Estate Company. All rights reserved.",
-  logoUrl: "",
-  faviconUrl: "",
+  logo: "",
+  favicon: "",
   socialLinks: {
     facebook: "https://facebook.com",
     twitter: "https://twitter.com",
     instagram: "https://instagram.com",
-    linkedin: "https://linkedin.com"
+    linkedin: "https://linkedin.com",
+    youtube: "https://youtube.com"
   }
 };
 
@@ -60,7 +47,10 @@ export const useWebsiteSettings = () => {
       }
 
       if (data && data.setting_value) {
-        setSettings(data.setting_value as unknown as WebsiteSettings);
+        setSettings({
+          ...defaultSettings,
+          ...(data.setting_value as any)
+        });
       }
     } catch (error) {
       console.error("Error:", error);

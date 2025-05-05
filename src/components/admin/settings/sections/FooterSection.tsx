@@ -7,7 +7,7 @@ import { WebsiteSettings } from "@/types/settings";
 
 interface FooterSectionProps {
   settings: WebsiteSettings;
-  onChange: (settings: WebsiteSettings) => void;
+  onChange: React.Dispatch<React.SetStateAction<WebsiteSettings>>;
 }
 
 export const FooterSection: React.FC<FooterSectionProps> = ({
@@ -25,7 +25,7 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
           <Textarea
             id="footer-text"
             value={settings.footerText}
-            onChange={(e) => onChange({ ...settings, footerText: e.target.value })}
+            onChange={(e) => onChange(prev => ({ ...prev, footerText: e.target.value }))}
             placeholder="© 2024 Your Company. All rights reserved."
             rows={3}
           />

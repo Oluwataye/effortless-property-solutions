@@ -2,11 +2,11 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import MediaSelector from "@/components/admin/media/MediaSelector";
-import { WebsiteSettings } from "@/hooks/use-website-settings";
+import { WebsiteSettings } from "@/types/settings";
 
 interface LogoSectionProps {
   settings: WebsiteSettings;
-  onChange: (settings: WebsiteSettings) => void;
+  onChange: React.Dispatch<React.SetStateAction<WebsiteSettings>>;
 }
 
 export const LogoSection: React.FC<LogoSectionProps> = ({
@@ -18,8 +18,8 @@ export const LogoSection: React.FC<LogoSectionProps> = ({
       <div className="space-y-2">
         <Label>Logo</Label>
         <MediaSelector
-          value={settings.logoUrl}
-          onChange={(url) => onChange({ ...settings, logoUrl: url })}
+          value={settings.logo}
+          onChange={(url) => onChange(prev => ({ ...prev, logo: url }))}
           fieldName="logo-image"
         />
       </div>
@@ -27,8 +27,8 @@ export const LogoSection: React.FC<LogoSectionProps> = ({
       <div className="space-y-2">
         <Label>Favicon</Label>
         <MediaSelector
-          value={settings.faviconUrl}
-          onChange={(url) => onChange({ ...settings, faviconUrl: url })}
+          value={settings.favicon}
+          onChange={(url) => onChange(prev => ({ ...prev, favicon: url }))}
           fieldName="favicon-image"
         />
       </div>
