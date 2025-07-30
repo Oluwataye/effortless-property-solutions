@@ -12,22 +12,12 @@ import FeaturedProperties from "@/components/FeaturedProperties";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-
-// Use the same query client configuration as in App.tsx for consistency
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1,
-    },
-  },
-});
+import SEOHead from "@/components/SEOHead";
 
 const Index = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen">
+    <div className="min-h-screen">
+        <SEOHead />
         <Navbar />
         <Hero />
         
@@ -85,7 +75,6 @@ const Index = () => {
         <Footer />
         <ChatWidget />
       </div>
-    </QueryClientProvider>
   );
 };
 
