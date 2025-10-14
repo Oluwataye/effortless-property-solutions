@@ -51,26 +51,20 @@ const ChatbotTester = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${window.location.origin}/api/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: { 
           message: input,
-          conversationId: null, // Test mode doesn't save conversation
-        }),
+          conversationId: null // Test mode doesn't save conversation
+        }
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to get response from chatbot");
+      if (error) {
+        throw new Error(error.message || "Failed to get response from chatbot");
       }
-
-      const data = await response.json();
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: data.response || "Sorry, I couldn't process your request.",
+        content: data?.response || "Sorry, I couldn't process your request.",
         sender: "bot",
         timestamp: new Date(),
       };

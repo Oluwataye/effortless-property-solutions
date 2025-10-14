@@ -28,7 +28,10 @@ const ProtectedRoute = ({
       }
 
       try {
-        const { data, error } = await supabase.rpc('has_role', { role: 'admin' });
+        const { data, error } = await supabase.rpc('has_role', { 
+          _user_id: session.user.id,
+          _role: 'admin' 
+        });
         if (error) throw error;
         setIsAdmin(data);
       } catch (error) {

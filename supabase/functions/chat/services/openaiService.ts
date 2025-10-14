@@ -2,106 +2,64 @@
 import { corsHeaders } from "../utils/corsHeaders.ts"
 import { createSupabaseClient } from "../utils/supabaseClient.ts"
 
-// Call OpenAI API with fallback to Perplexity AI
+// Call Lovable AI Gateway (using Gemini models)
 export async function callOpenAI(message: string, systemMessage: string) {
-  const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
-  const perplexityApiKey = Deno.env.get('PERPLEXITY_API_KEY')
+  const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')
   
-  // Try OpenAI first
-  if (openAIApiKey) {
-    try {
-      console.log('Attempting to use OpenAI API')
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: systemMessage },
-            { role: 'user', content: message }
-          ],
-          temperature: 0.7,
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        console.error('OpenAI API error:', errorData)
-        
-        // If OpenAI fails and we have Perplexity API key, try that as fallback
-        if (perplexityApiKey) {
-          console.log('Falling back to Perplexity API')
-          return await callPerplexity(message, systemMessage, perplexityApiKey)
-        }
-        
-        throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`)
-      }
-
-      const data = await response.json()
-      return { response: data.choices[0].message.content }
-    } catch (openAIError) {
-      console.error('OpenAI API error:', openAIError)
-      
-      // If OpenAI throws an error and we have Perplexity API key, try that as fallback
-      if (perplexityApiKey) {
-        console.log('Falling back to Perplexity API due to error')
-        return await callPerplexity(message, systemMessage, perplexityApiKey)
-      }
-      
-      return { 
-        error: openAIError.message,
-        response: "I'm sorry, but I encountered an issue while processing your request. Please try again later." 
-      }
-    }
-  } else if (perplexityApiKey) {
-    // If no OpenAI API key but we have Perplexity, use that
-    console.log('No OpenAI API key, using Perplexity API')
-    return await callPerplexity(message, systemMessage, perplexityApiKey)
-  } else {
-    // No API keys available
-    console.error('No AI API keys configured')
+  if (!lovableApiKey) {
+    console.error('LOVABLE_API_KEY not configured')
     return {
-      error: "No AI API keys are configured",
-      response: "I'm sorry, but I'm currently unable to process your request due to a configuration issue. Please contact the administrator."
+      error: "AI service not configured",
+      response: "I'm sorry, but I'm currently unable to process your request. Please contact the administrator."
     }
   }
-}
 
-// Call Perplexity API as a fallback
-async function callPerplexity(message: string, systemMessage: string, apiKey: string) {
   try {
-    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+    console.log('Using Lovable AI Gateway')
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${lovableApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-sonar-small-128k-online',
+        model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemMessage },
           { role: 'user', content: message }
         ],
         temperature: 0.7,
-        max_tokens: 1000,
       }),
-    });
+    })
 
     if (!response.ok) {
       const errorData = await response.json()
-      console.error('Perplexity API error:', errorData)
-      throw new Error(`Perplexity API error: ${errorData.error?.message || 'Unknown error'}`)
+      console.error('Lovable AI error:', errorData)
+      
+      // Handle rate limiting errors
+      if (response.status === 429) {
+        return {
+          error: "Rate limit exceeded",
+          response: "I'm currently experiencing high traffic. Please try again in a moment."
+        }
+      }
+      
+      if (response.status === 402) {
+        return {
+          error: "Credits exhausted",
+          response: "The AI service credits have been exhausted. Please contact the administrator."
+        }
+      }
+      
+      throw new Error(`AI API error: ${errorData.error?.message || 'Unknown error'}`)
     }
 
     const data = await response.json()
     return { response: data.choices[0].message.content }
-  } catch (perplexityError) {
-    console.error('Perplexity API error:', perplexityError)
+  } catch (error) {
+    console.error('AI API error:', error)
     return { 
-      error: perplexityError.message,
+      error: error.message,
       response: "I'm sorry, but I encountered an issue while processing your request. Please try again later." 
     }
   }
