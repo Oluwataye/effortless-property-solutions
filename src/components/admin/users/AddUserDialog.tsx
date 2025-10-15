@@ -31,7 +31,7 @@ const AddUserDialog = ({ onAddUser, isCreating }: AddUserDialogProps) => {
   const [newUser, setNewUser] = useState<NewUser>({
     email: "",
     password: "",
-    role: "editor",
+    role: "user",
   });
 
   const handleSubmit = async () => {
@@ -39,7 +39,7 @@ const AddUserDialog = ({ onAddUser, isCreating }: AddUserDialogProps) => {
     // Only close and reset if operation was successful
     // The parent component will handle errors
     setIsOpen(false);
-    setNewUser({ email: "", password: "", role: "editor" });
+    setNewUser({ email: "", password: "", role: "user" });
   };
 
   return (
@@ -80,7 +80,7 @@ const AddUserDialog = ({ onAddUser, isCreating }: AddUserDialogProps) => {
             <label htmlFor="role">Role</label>
             <Select
               value={newUser.role}
-              onValueChange={(value: "admin" | "editor") =>
+              onValueChange={(value: "admin" | "moderator" | "user") =>
                 setNewUser({ ...newUser, role: value })
               }
             >
@@ -89,7 +89,8 @@ const AddUserDialog = ({ onAddUser, isCreating }: AddUserDialogProps) => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="editor">Editor</SelectItem>
+                <SelectItem value="moderator">Moderator</SelectItem>
+                <SelectItem value="user">User</SelectItem>
               </SelectContent>
             </Select>
           </div>
