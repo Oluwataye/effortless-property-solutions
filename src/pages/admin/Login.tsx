@@ -28,8 +28,10 @@ const Login = () => {
 
       if (data.session) {
         // Check if user has admin role
-        const { data: roleData, error: roleError } = await supabase
-          .rpc('has_role', { role: 'admin' });
+        const { data: roleData, error: roleError } = await supabase.rpc('has_role', {
+          _user_id: data.user?.id ?? data.session.user.id,
+          _role: 'admin',
+        });
 
         if (roleError) throw roleError;
 
