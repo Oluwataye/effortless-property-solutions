@@ -165,6 +165,43 @@ export type Database = {
           message: string
           name: string
           phone: string | null
+          read: boolean | null
+          status: string | null
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          read?: boolean | null
+          status?: string | null
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          read?: boolean | null
+          status?: string | null
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      inquiries: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          property_id: string | null
           status: string | null
         }
         Insert: {
@@ -174,6 +211,7 @@ export type Database = {
           message: string
           name: string
           phone?: string | null
+          property_id?: string | null
           status?: string | null
         }
         Update: {
@@ -183,9 +221,18 @@ export type Database = {
           message?: string
           name?: string
           phone?: string | null
+          property_id?: string | null
           status?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "inquiries_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       news: {
         Row: {
@@ -376,6 +423,7 @@ export type Database = {
           image_url: string | null
           name: string
           rating: number | null
+          relationship_status: string | null
           status: string | null
           updated_at: string
         }
@@ -387,6 +435,7 @@ export type Database = {
           image_url?: string | null
           name: string
           rating?: number | null
+          relationship_status?: string | null
           status?: string | null
           updated_at?: string
         }
@@ -398,6 +447,7 @@ export type Database = {
           image_url?: string | null
           name?: string
           rating?: number | null
+          relationship_status?: string | null
           status?: string | null
           updated_at?: string
         }
@@ -418,6 +468,30 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      website_settings: {
+        Row: {
+          created_at: string
+          id: string
+          setting_key: string
+          setting_value: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          setting_key: string
+          setting_value?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          setting_key?: string
+          setting_value?: Json | null
+          updated_at?: string
         }
         Relationships: []
       }
