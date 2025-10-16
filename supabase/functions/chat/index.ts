@@ -6,6 +6,7 @@ import { fetchRelevantKnowledge } from "./services/knowledgeService.ts"
 import { fetchCompanyServices, fetchCompanyProjects, fetchCompanyTestimonials } from "./services/companyDataService.ts"
 import { buildSystemMessage } from "./services/contextBuilder.ts"
 import { callOpenAI, storeMessage } from "./services/openaiService.ts"
+import { checkRateLimit } from "./utils/rateLimit.ts"
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -15,6 +16,34 @@ serve(async (req) => {
 
   try {
     const { message, conversationId } = await req.json()
+    
+    // Input validation - prevent injection attacks
+    if (!message || typeof message !== 'string') {
+      return new Response(
+        JSON.stringify({ error: "Invalid message format" }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+    
+    // Length validation - prevent DoS through large payloads
+    if (message.length > 5000) {
+      return new Response(
+        JSON.stringify({ error: "Message too long. Maximum 5000 characters allowed." }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+    
+    // Rate limiting - prevent DDoS attacks (10 requests per minute per conversation)
+    const rateLimitKey = conversationId || req.headers.get('x-forwarded-for') || 'anonymous';
+    if (!checkRateLimit(rateLimitKey, 10, 60000)) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Rate limit exceeded. Please wait a moment before sending another message.",
+          response: "I'm receiving too many requests. Please wait a moment and try again."
+        }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
 
     // For service-related queries, let's add special handling to ensure they work
     const isServiceQuery = message.toLowerCase().includes('service') || 

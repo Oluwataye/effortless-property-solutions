@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Edit } from "lucide-react";
+import DOMPurify from 'dompurify';
 
 interface BlogPostViewProps {
   post: {
@@ -61,7 +62,7 @@ const BlogPostView = ({ post, onEdit, onClose }: BlogPostViewProps) => {
         <CardContent className="pt-6">
           <div
             className="prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
           />
         </CardContent>
         <CardFooter className="border-t bg-muted/50 px-6 py-4">

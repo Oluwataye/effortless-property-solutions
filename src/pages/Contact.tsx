@@ -20,13 +20,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-// Form validation schema
+// Form validation schema with security constraints
 const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-  phone: z.string().optional(),
-  subject: z.string().min(2, "Subject must be at least 2 characters")
+  name: z.string()
+    .min(2, "Name must be at least 2 characters")
+    .max(200, "Name must be less than 200 characters")
+    .trim(),
+  email: z.string()
+    .email("Please enter a valid email address")
+    .max(255, "Email must be less than 255 characters")
+    .trim(),
+  message: z.string()
+    .min(10, "Message must be at least 10 characters")
+    .max(5000, "Message must be less than 5000 characters")
+    .trim(),
+  phone: z.string().max(50, "Phone must be less than 50 characters").optional(),
+  subject: z.string()
+    .min(2, "Subject must be at least 2 characters")
+    .max(200, "Subject must be less than 200 characters")
+    .trim()
 });
 
 type ContactFormValues = z.infer<typeof formSchema>;
