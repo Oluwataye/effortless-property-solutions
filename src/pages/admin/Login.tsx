@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { Lock } from "lucide-react";
+import { Lock, Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -76,14 +77,28 @@ const Login = () => {
                 required
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="pr-10"
               />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-10 w-10 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                )}
+              </Button>
             </div>
             <Button
               type="submit"
