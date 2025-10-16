@@ -1,0 +1,16 @@
+[build]
+  publish = "dist"
+  command = "bun run build"
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin/:splat"
+  status = 200
+  force = true
+  conditions = {Role = ["admin"]}
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/login"
+  status = 401
+  force = true
