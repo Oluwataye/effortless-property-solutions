@@ -40,7 +40,7 @@ const Login = () => {
           throw new Error("Access denied. Admin privileges required.");
         }
 
-        navigate("/admin/dashboard");
+        // No manual navigation here; let AuthProvider and router handle it
         toast({
           title: "Welcome back!",
           description: "Successfully logged in to admin panel",
