@@ -1,9 +1,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { ArrowRight, Bed, Bath, Ruler } from "lucide-react";
+import { ArrowRight, Bed, Bath, Ruler, MapPin, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 
 const FeaturedProperties = () => {
   const { data: properties, isLoading } = useQuery({
@@ -22,9 +22,16 @@ const FeaturedProperties = () => {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-gray-200 animate-pulse h-80 rounded-lg"></div>
+          <div key={i} className="group relative overflow-hidden rounded-2xl bg-muted/30 shadow-lg animate-pulse">
+            <div className="h-72 bg-muted" />
+            <div className="p-6 space-y-4">
+              <div className="h-6 bg-muted rounded w-3/4" />
+              <div className="h-4 bg-muted rounded w-1/2" />
+              <div className="h-8 bg-muted rounded w-1/3" />
+            </div>
+          </div>
         ))}
       </div>
     );
@@ -33,74 +40,120 @@ const FeaturedProperties = () => {
   // If no properties are available, show a message
   if (!properties || properties.length === 0) {
     return (
-      <div className="text-center py-10">
-        <p className="text-muted-foreground">No properties available at this time.</p>
+      <div className="text-center py-16">
+        <div className="max-w-md mx-auto">
+          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+            <Eye className="w-10 h-10 text-muted-foreground" />
+          </div>
+          <h3 className="text-2xl font-bold text-foreground mb-2">No Properties Available</h3>
+          <p className="text-muted-foreground">Check back soon for new listings.</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {properties.map((property) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in">
+      {properties.slice(0, 6).map((property, index) => (
         <div
           key={property.id}
-          className="group relative overflow-hidden rounded-2xl bg-card shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+          className="group relative overflow-hidden rounded-3xl bg-card border border-border shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+          style={{ animationDelay: `${index * 100}ms` }}
         >
-          {/* Image Container */}
-          <div className="relative h-64 overflow-hidden">
+          {/* Image Container with Overlay */}
+          <div className="relative h-80 overflow-hidden">
             <img
               src={property.image_urls?.[0] || "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80"}
               alt={property.title}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             
-            {/* Category Badge */}
-            <div className="absolute top-4 left-4">
-              <span className="px-4 py-2 bg-secondary text-secondary-foreground text-xs font-bold rounded-full shadow-lg">
-                {property.category || 'Featured'}
-              </span>
+            {/* Dark Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            
+            {/* Status & Category Badges */}
+            <div className="absolute top-4 left-4 flex gap-2">
+              <Badge className="bg-secondary text-secondary-foreground font-bold text-xs px-3 py-1.5 shadow-lg border-0">
+                {property.category?.toUpperCase() || 'RESIDENTIAL'}
+              </Badge>
+              {property.status === 'sold' && (
+                <Badge className="bg-destructive text-destructive-foreground font-bold text-xs px-3 py-1.5 shadow-lg border-0">
+                  SOLD
+                </Badge>
+              )}
+            </div>
+            
+            {/* Price Badge - Positioned on Image */}
+            <div className="absolute bottom-4 left-4">
+              <div className="bg-card/95 backdrop-blur-sm px-4 py-2.5 rounded-xl shadow-xl border border-border">
+                <p className="text-sm text-muted-foreground font-medium">Price</p>
+                <p className="text-2xl font-bold text-primary">
+                  ${property.price?.toLocaleString()}
+                </p>
+              </div>
+            </div>
+            
+            {/* Quick View Button - Appears on Hover */}
+            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <button className="bg-card/95 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-primary hover:text-primary-foreground transition-all">
+                <Eye className="w-5 h-5" />
+              </button>
             </div>
           </div>
           
-          {/* Content */}
-          <div className="p-6">
-            <h3 className="text-2xl font-bold text-foreground mb-3 font-serif group-hover:text-primary transition-colors">
-              {property.title}
-            </h3>
-            <p className="text-muted-foreground mb-4 flex items-center">
-              <span className="text-secondary mr-2">📍</span>
-              {property.location}
-            </p>
-            
-            {/* Price */}
-            <div className="mb-6">
-              <p className="text-3xl font-bold text-primary">
-                ${property.price?.toLocaleString()}
-              </p>
+          {/* Content Section */}
+          <div className="p-6 space-y-4">
+            {/* Title */}
+            <div>
+              <h3 className="text-xl font-bold text-foreground mb-2 font-serif group-hover:text-primary transition-colors line-clamp-1">
+                {property.title}
+              </h3>
+              
+              {/* Location */}
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <MapPin className="w-4 h-4 text-secondary flex-shrink-0" />
+                <span className="text-sm line-clamp-1">{property.location || 'Location not specified'}</span>
+              </div>
             </div>
             
-            {/* Property Features */}
-            <div className="flex justify-between items-center pb-6 mb-6 border-b border-border">
-              <div className="flex items-center space-x-2 text-muted-foreground">
-                <Bed className="h-5 w-5 text-secondary" />
-                <span className="font-medium">{property.bedrooms}</span>
+            {/* Description - Optional */}
+            {property.description && (
+              <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                {property.description}
+              </p>
+            )}
+            
+            {/* Property Features Grid */}
+            <div className="grid grid-cols-3 gap-4 py-4 border-y border-border">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-1">
+                  <Bed className="h-5 w-5 text-secondary" />
+                </div>
+                <p className="text-lg font-bold text-foreground">{property.bedrooms || 0}</p>
+                <p className="text-xs text-muted-foreground">Bedrooms</p>
               </div>
-              <div className="flex items-center space-x-2 text-muted-foreground">
-                <Bath className="h-5 w-5 text-secondary" />
-                <span className="font-medium">{property.bathrooms}</span>
+              
+              <div className="text-center border-x border-border">
+                <div className="flex items-center justify-center mb-1">
+                  <Bath className="h-5 w-5 text-secondary" />
+                </div>
+                <p className="text-lg font-bold text-foreground">{property.bathrooms || 0}</p>
+                <p className="text-xs text-muted-foreground">Bathrooms</p>
               </div>
-              <div className="flex items-center space-x-2 text-muted-foreground">
-                <Ruler className="h-5 w-5 text-secondary" />
-                <span className="font-medium">{property.area} ft²</span>
+              
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-1">
+                  <Ruler className="h-5 w-5 text-secondary" />
+                </div>
+                <p className="text-lg font-bold text-foreground">{property.area || 0}</p>
+                <p className="text-xs text-muted-foreground">Sq Ft</p>
               </div>
             </div>
             
             {/* CTA Button */}
             <Link
               to={`/portfolio`}
-              className="inline-flex items-center justify-center w-full py-3 px-6 bg-primary hover:bg-primary-hover text-primary-foreground font-semibold rounded-lg transition-all duration-200 group/btn"
+              className="inline-flex items-center justify-center w-full py-3.5 px-6 bg-primary hover:bg-primary-hover text-primary-foreground font-semibold rounded-xl transition-all duration-300 group/btn shadow-md hover:shadow-lg"
             >
               View Details 
               <ArrowRight className="ml-2 h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
