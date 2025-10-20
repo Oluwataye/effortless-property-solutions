@@ -2,6 +2,19 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
+
+const propertySchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters").max(200, "Title is too long"),
+  description: z.string().min(10, "Description must be at least 10 characters").max(2000, "Description is too long"),
+  price: z.string().min(1, "Price is required"),
+  location: z.string().min(3, "Location must be at least 3 characters").max(200, "Location is too long"),
+  bedrooms: z.string().min(1, "Bedrooms is required"),
+  bathrooms: z.string().min(1, "Bathrooms is required"),
+  area: z.string().min(1, "Area is required"),
+  category: z.enum(["residential", "commercial", "industrial"]),
+  status: z.enum(["available", "sold", "rented"]),
+});
 
 interface PropertyFormData {
   title: string;
@@ -23,6 +36,7 @@ interface UsePropertyFormProps {
 
 export const usePropertyForm = ({ onSuccess, property }: UsePropertyFormProps) => {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<PropertyFormData>({
     title: "",
     description: "",
@@ -66,13 +80,49 @@ export const usePropertyForm = ({ onSuccess, property }: UsePropertyFormProps) =
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form data
     try {
+      propertySchema.parse(formData);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      // Validate numeric values
+      const priceNum = parseFloat(formData.price);
+      const bedroomsNum = parseInt(formData.bedrooms);
+      const bathroomsNum = parseInt(formData.bathrooms);
+      const areaNum = parseFloat(formData.area);
+
+      if (priceNum <= 0) {
+        throw new Error("Price must be greater than 0");
+      }
+      if (bedroomsNum < 0) {
+        throw new Error("Bedrooms cannot be negative");
+      }
+      if (bathroomsNum < 0) {
+        throw new Error("Bathrooms cannot be negative");
+      }
+      if (areaNum <= 0) {
+        throw new Error("Area must be greater than 0");
+      }
+
       const propertyData = {
         ...formData,
-        price: parseFloat(formData.price),
-        bedrooms: parseInt(formData.bedrooms),
-        bathrooms: parseInt(formData.bathrooms),
-        area: parseFloat(formData.area),
+        price: priceNum,
+        bedrooms: bedroomsNum,
+        bathrooms: bathroomsNum,
+        area: areaNum,
         created_by: (await supabase.auth.getUser()).data.user?.id,
       };
 
@@ -89,13 +139,17 @@ export const usePropertyForm = ({ onSuccess, property }: UsePropertyFormProps) =
         title: "Success",
         description: `Property ${property ? "updated" : "added"} successfully`,
       });
+      
       onSuccess();
     } catch (error: any) {
+      console.error("Property form error:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || `Failed to ${property ? "update" : "add"} property`,
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -104,5 +158,6 @@ export const usePropertyForm = ({ onSuccess, property }: UsePropertyFormProps) =
     handleFormDataChange,
     handleImageChange,
     handleSubmit,
+    isSubmitting,
   };
 };
