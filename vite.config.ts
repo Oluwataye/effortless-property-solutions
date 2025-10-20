@@ -12,14 +12,6 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: '_redirects',
-          dest: '.',
-        },
-      ],
-    }),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -28,12 +20,5 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: 'dist', // Ensure this matches Netlify's expected output directory
-    rollupOptions: {
-      // Optional: Explicitly include _redirects if needed
-      input: {
-        main: path.resolve(__dirname, 'index.html'),
-        // No need to list _redirects here; viteStaticCopy handles it
-      },
-    },
   },
 }));
