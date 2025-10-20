@@ -84,18 +84,20 @@ const Services = () => {
 
   if (isLoading) {
     return (
-      <section className="py-20 bg-accent">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-700 mb-6">
-              HOW CAN WE
+      <section className="py-24 bg-gradient-to-b from-muted/20 to-white relative">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--secondary)/0.08),transparent_50%)]" />
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-4xl mx-auto text-center mb-20">
+            <div className="inline-block mb-6 px-6 py-2 bg-secondary/10 rounded-full">
+              <span className="text-secondary font-semibold text-sm tracking-wider uppercase">Our Services</span>
+            </div>
+            <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-8 leading-tight">
+              How Can We
               <br />
-              HELP YOU
-              <br />
-              TODAY?
+              <span className="text-primary">Help You Today?</span>
             </h2>
-            <p className="text-xl text-gray-600 mb-8">I am looking for</p>
-            <div className="animate-pulse bg-gray-300 h-12 w-full max-w-md mx-auto rounded"></div>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-10 font-light">I am looking for</p>
+            <div className="animate-pulse bg-muted h-14 w-full max-w-lg mx-auto rounded-lg"></div>
           </div>
         </div>
       </section>
@@ -103,29 +105,37 @@ const Services = () => {
   }
 
   return (
-    <section className="py-20 bg-accent">
-      <div className="container mx-auto px-4 overflow-y-auto max-h-[80vh]">
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-700 mb-6">
-            HOW CAN WE
+    <section className="py-24 bg-gradient-to-b from-muted/20 to-white relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--secondary)/0.08),transparent_50%)]" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+      
+      <div className="container mx-auto px-4 relative">
+        <div className="max-w-4xl mx-auto text-center mb-20 animate-fade-in">
+          <div className="inline-block mb-6 px-6 py-2 bg-secondary/10 rounded-full animate-slide-down">
+            <span className="text-secondary font-semibold text-sm tracking-wider uppercase">Our Services</span>
+          </div>
+          <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-8 leading-tight animate-slide-in">
+            How Can We
             <br />
-            HELP YOU
-            <br />
-            TODAY?
+            <span className="text-primary">Help You Today?</span>
           </h2>
-          <p className="text-xl text-gray-600 mb-8">I am looking for</p>
+          <p className="text-xl md:text-2xl text-muted-foreground mb-10 font-light">I am looking for</p>
           
           {services && services.length > 0 && (
-            <ServiceSelector
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              services={services}
-            />
+            <div className="animate-scale-in">
+              <ServiceSelector
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                services={services}
+              />
+            </div>
           )}
         </div>
 
         {selectedCategory && services && (
-          <div className="animate-fade-in">
+          <div className="animate-fade-in max-w-6xl mx-auto">
             {services
               .filter(service => service.category === selectedCategory)
               .map((service) => (

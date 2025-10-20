@@ -21,55 +21,61 @@ const Index = () => {
         <Navbar />
         <Hero />
         
-        <HomeSection title="Our Services">
-          <Services />
-        </HomeSection>
+        <Services />
         
-        <HomeSection title="Featured Properties">
+        <HomeSection title="Featured Properties" className="bg-gradient-to-b from-white to-muted/30">
           <FeaturedProperties />
           <div className="text-center mt-12">
-            <Button asChild>
-              <Link to="/portfolio">
-                View All Properties <ArrowRight className="ml-2 h-4 w-4" />
+            <Button asChild size="lg" className="shadow-lg hover:shadow-xl transition-all">
+              <Link to="/portfolio" className="group">
+                View All Properties <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
           </div>
         </HomeSection>
 
-        <HomeSection title="Featured Projects" background="dark">
-          <ProjectsSection />
-          <div className="text-center mt-12">
-            <Button asChild variant="outline" className="bg-transparent text-white border-white hover:bg-white hover:text-primary">
-              <Link to="/portfolio">
-                View All Projects <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+        <HomeSection title="Featured Projects" background="dark" className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-accent opacity-95" />
+          <div className="relative z-10">
+            <ProjectsSection />
+            <div className="text-center mt-12">
+              <Button asChild size="lg" variant="outline" className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-primary shadow-gold transition-all">
+                <Link to="/portfolio" className="group">
+                  View All Projects <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </HomeSection>
 
-        <TestimonialsSection />
+        <HomeSection title="What Our Clients Say" className="bg-white">
+          <TestimonialsSection />
+        </HomeSection>
 
-        <HomeSection title="Latest News">
+        <HomeSection title="Latest News" className="bg-gradient-to-b from-muted/30 to-white">
           <NewsSection />
           <div className="text-center mt-12">
-            <Button asChild>
-              <Link to="/blog">
-                View All News <ArrowRight className="ml-2 h-4 w-4" />
+            <Button asChild size="lg" className="shadow-lg hover:shadow-xl transition-all">
+              <Link to="/blog" className="group">
+                View All News <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
           </div>
         </HomeSection>
 
-        <HomeSection title="Get in Touch" background="dark" className="text-center">
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Ready to transform your property management experience? Contact us today
-            to discuss how we can help you achieve your goals.
-          </p>
-          <Button asChild variant="outline" className="bg-transparent text-white border-white hover:bg-white hover:text-primary">
-            <Link to="/contact">
-              Contact Us <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+        <HomeSection title="Get in Touch" background="dark" className="text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary opacity-95" />
+          <div className="relative z-10">
+            <p className="text-xl md:text-2xl mb-10 max-w-3xl mx-auto text-white/90 leading-relaxed">
+              Ready to transform your property management experience? Contact us today
+              to discuss how we can help you achieve your goals.
+            </p>
+            <Button asChild size="lg" variant="outline" className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-primary shadow-gold transition-all">
+              <Link to="/contact" className="group">
+                Contact Us <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+          </div>
         </HomeSection>
 
         <Footer />

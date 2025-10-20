@@ -17,20 +17,27 @@ interface TestimonialCardProps {
 export function TestimonialCard({ testimonial }: TestimonialCardProps) {
   return (
     <div className="w-full flex-shrink-0 px-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-        <Avatar className="w-20 h-20 mx-auto mb-4 overflow-hidden">
-          <AvatarImage 
-            src={testimonial.image} 
-            alt={testimonial.name}
-            className="object-cover w-full h-full"
-          />
-          <AvatarFallback className="text-lg">{getInitials(testimonial.name)}</AvatarFallback>
-        </Avatar>
-        <p className="text-lg text-gray-600 mb-6 italic">
-          "{testimonial.content}"
+      <div className="bg-card rounded-2xl shadow-xl p-10 md:p-12 text-center border border-border hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
+        <div className="mb-6">
+          <div className="text-6xl text-secondary mb-4">"</div>
+        </div>
+        <p className="text-lg md:text-xl text-foreground mb-8 leading-relaxed font-light italic">
+          {testimonial.content}
         </p>
-        <h4 className="font-semibold text-primary">{testimonial.name}</h4>
-        <p className="text-sm text-gray-500">{testimonial.position || "Client"}</p>
+        <div className="flex items-center justify-center gap-4 pt-6 border-t border-border">
+          <Avatar className="w-16 h-16 overflow-hidden border-2 border-secondary">
+            <AvatarImage 
+              src={testimonial.image} 
+              alt={testimonial.name}
+              className="object-cover w-full h-full"
+            />
+            <AvatarFallback className="text-lg bg-secondary/10 text-secondary">{getInitials(testimonial.name)}</AvatarFallback>
+          </Avatar>
+          <div className="text-left">
+            <h4 className="font-bold text-lg text-foreground">{testimonial.name}</h4>
+            <p className="text-sm text-muted-foreground">{testimonial.position || "Client"}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
