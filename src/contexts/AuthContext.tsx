@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,12 +7,14 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   loading: boolean;
+  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
   loading: true,
+  isAuthenticated: false,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -54,8 +55,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, [toast]);
 
+  const isAuthenticated = !!session; // Derive isAuthenticated from session presence
+
   return (
-    <AuthContext.Provider value={{ session, user, loading }}>
+    <AuthContext.Provider value={{ session, user, loading, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
