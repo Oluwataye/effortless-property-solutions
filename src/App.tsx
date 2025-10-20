@@ -1,8 +1,8 @@
 import React, { Suspense } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import ChatWidget from "@/components/chat/ChatWidget";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
@@ -41,102 +41,155 @@ const queryClient = new QueryClient({
   },
 });
 
-function App() {
+function AppContent() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <Router>
-            <SEOHead />
-            <Toaster />
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/admin" element={
-                  <ProtectedRoute requireAdmin>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/dashboard" element={
-                  <ProtectedRoute requireAdmin>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/properties" element={
-                  <ProtectedRoute requireAdmin>
-                    <Properties />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/projects" element={
-                  <ProtectedRoute requireAdmin>
-                    <Projects />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/news" element={
-                  <ProtectedRoute requireAdmin>
-                    <News />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/services" element={
-                  <ProtectedRoute requireAdmin>
-                    <ServicesAdmin />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/blog-posts" element={
-                  <ProtectedRoute requireAdmin>
-                    <BlogPosts />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/users" element={
-                  <ProtectedRoute requireAdmin>
-                    <Users />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/testimonials" element={
-                  <ProtectedRoute requireAdmin>
-                    <Testimonials />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/inquiries" element={
-                  <ProtectedRoute requireAdmin>
-                    <Inquiries />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/contact" element={
-                  <ProtectedRoute requireAdmin>
-                    <ContactAdmin />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/media" element={
-                  <ProtectedRoute requireAdmin>
-                    <Media />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/chatbot" element={
-                  <ProtectedRoute requireAdmin>
-                    <Chatbot />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/settings" element={
-                  <ProtectedRoute requireAdmin>
-                    <Settings />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/login" element={<Login />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-            <ChatWidget />
-          </Router>
-        </AuthProvider>
-      </QueryClientProvider>
+      <SEOHead />
+      <Toaster />
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/properties"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Properties />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/projects"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Projects />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/news"
+            element={
+              <ProtectedRoute requireAdmin>
+                <News />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/services"
+            element={
+              <ProtectedRoute requireAdmin>
+                <ServicesAdmin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/blog-posts"
+            element={
+              <ProtectedRoute requireAdmin>
+                <BlogPosts />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Users />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/testimonials"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Testimonials />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/inquiries"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Inquiries />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/contact"
+            element={
+              <ProtectedRoute requireAdmin>
+                <ContactAdmin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/media"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Media />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/chatbot"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Chatbot />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/settings"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/login"
+            element={!isAuthenticated ? <Login /> : <Navigate to="/admin/dashboard" />}
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+      <ChatWidget />
     </ErrorBoundary>
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
