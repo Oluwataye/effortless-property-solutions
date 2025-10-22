@@ -1,0 +1,10 @@
+# robots.txt for Amovate Solutions Limited
+User-agent: *
+Allow: /
+
+# Disallow admin and private routes
+Disallow: /admin/
+Disallow: /auth
+
+# Sitemap location
+Sitemap: https://amovate.lovable.app/sitemap.xml

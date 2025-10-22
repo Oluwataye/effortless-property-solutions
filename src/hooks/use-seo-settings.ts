@@ -108,6 +108,46 @@ export const useSeoSettings = () => {
     setSettings,
     loading,
     saving,
-    saveSettings
+    saveSettings,
+    fetchSettings
   };
 };
+
+// Hook for public pages to fetch SEO settings
+export const usePublicSeoSettings = () => {
+  const [settings, setSettings] = useState<SeoSettings>(defaultSeoSettings);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("website_settings")
+          .select("*")
+          .eq("setting_key", "seo_settings")
+          .single();
+
+        if (error && error.code !== "PGRST116") {
+          console.error("Error fetching SEO settings:", error);
+          return;
+        }
+
+        if (data && data.setting_value) {
+          setSettings({
+            ...defaultSeoSettings,
+            ...(data.setting_value as any)
+          });
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
+  return { settings, loading };
+};
+
