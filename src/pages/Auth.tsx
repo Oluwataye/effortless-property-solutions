@@ -1,68 +1,95 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { Lock, Eye, EyeOff } from "lucide-react";
+import LoadingFallback from "@/components/LoadingFallback";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { session } = useAuth();
+  const { session, loading: authLoading } = useAuth();
 
+  // Check if user is already authenticated and has admin role
   useEffect(() => {
-    if (session) {
-      navigate("/");
-    }
-  }, [session, navigate]);
+    const checkAuthAndRole = async () => {
+      if (authLoading) return;
+      
+      if (session) {
+        try {
+          const { data: hasAdminRole, error } = await supabase.rpc('has_role', {
+            _user_id: session.user.id,
+            _role: 'admin',
+          });
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+          if (error) throw error;
 
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin,
+          if (hasAdminRole) {
+            navigate("/admin/dashboard");
+          } else {
+            toast({
+              title: "Access Denied",
+              description: "You need admin privileges to access this area.",
+              variant: "destructive",
+            });
+            await supabase.auth.signOut();
+          }
+        } catch (error) {
+          console.error('Error checking role:', error);
         }
-      });
+      }
+      setCheckingAuth(false);
+    };
 
-      if (error) throw error;
+    checkAuthAndRole();
+  }, [session, authLoading, navigate, toast]);
 
-      toast({
-        title: "Success!",
-        description: "Please check your email to confirm your account.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (authLoading || checkingAuth) {
+    return <LoadingFallback />;
+  }
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
+
+      if (data.session) {
+        // Check if user has admin role
+        const { data: hasAdminRole, error: roleError } = await supabase.rpc('has_role', {
+          _user_id: data.user?.id ?? data.session.user.id,
+          _role: 'admin',
+        });
+
+        if (roleError) throw roleError;
+
+        if (!hasAdminRole) {
+          await supabase.auth.signOut();
+          throw new Error("Access denied. Admin privileges required.");
+        }
+
+        toast({
+          title: "Welcome back!",
+          description: "Successfully logged in",
+        });
+        
+        navigate("/admin/dashboard");
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -75,78 +102,59 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl text-center">Welcome to AMOVATE</CardTitle>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted px-4">
+      <Card className="w-full max-w-md shadow-xl">
+        <CardHeader className="space-y-1">
+          <div className="flex items-center justify-center mb-4">
+            <Lock className="h-12 w-12 text-primary" />
+          </div>
+          <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
+          <p className="text-sm text-muted-foreground text-center">
+            Enter your credentials to access the admin panel
+          </p>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={loading}
-                >
-                  {loading ? "Signing in..." : "Sign In"}
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={loading}
-                >
-                  {loading ? "Signing up..." : "Sign Up"}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <form onSubmit={handleSignIn} className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2 relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-10 w-10 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                )}
+              </Button>
+            </div>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>

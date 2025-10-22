@@ -56,7 +56,10 @@ function AppContent() {
           <Route path="/services" element={<Services />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/auth" element={<Auth />} />
+          <Route 
+            path="/auth" 
+            element={!isAuthenticated ? <Auth /> : <Navigate to="/admin/dashboard" />} 
+          />
           <Route
             path="/admin"
             element={

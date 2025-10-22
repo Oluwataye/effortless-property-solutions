@@ -58,8 +58,9 @@ export async function callOpenAI(message: string, systemMessage: string) {
     return { response: data.choices[0].message.content }
   } catch (error) {
     console.error('AI API error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return { 
-      error: error.message,
+      error: errorMessage,
       response: "I'm sorry, but I encountered an issue while processing your request. Please try again later." 
     }
   }
