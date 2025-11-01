@@ -6,26 +6,35 @@ const defaultTestimonials = [
   {
     id: "1",
     name: "John Smith",
-    position: "CEO, Smith Properties",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80",
-    content: "Amovate has transformed our property management experience. Their innovative solutions and dedication to service excellence are unmatched.",
-    rating: 5
+    position: "Property Owner",
+    company: "Smith Estates",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&h=150&q=80",
+    content:
+      "AMOVATE Solutions transformed how I manage my 12-unit residential complex. Their proactive maintenance system caught issues before they became expensive problems.",
+    result: "35% reduction in maintenance costs",
+    rating: 5,
   },
   {
     id: "2",
     name: "Sarah Johnson",
-    position: "Director, Johnson Real Estate",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80",
-    content: "Working with Amovate has been a game-changer for our business. Their expertise and professionalism are truly outstanding.",
-    rating: 5
+    position: "Real Estate Investor",
+    company: "Johnson Holdings",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80",
+    content:
+      "Since partnering with AMOVATE, my portfolio occupancy rate jumped from 85% to 98%. Their tenant screening process is thorough and their response time is incredible.",
+    result: "98% occupancy maintained",
+    rating: 5,
   },
   {
     id: "3",
     name: "Michael Brown",
-    position: "Property Developer",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80",
-    content: "The level of service and attention to detail provided by Amovate is exceptional. They consistently exceed our expectations.",
-    rating: 5
+    position: "Commercial Property Director",
+    company: "Metro Business Park",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150&q=80",
+    content:
+      "AMOVATE's technology platform gives me real-time insights into property performance. The financial reporting alone has saved me 20 hours per month.",
+    result: "20 hours saved monthly",
+    rating: 5,
   },
 ];
 
@@ -38,7 +47,9 @@ const TestimonialsSection = () => {
     : testimonials.map(t => ({
         id: t.id,
         name: t.name,
-        position: t.relationship_status, // Use the relationship status here
+        position: t.relationship_status,
+        company: undefined,
+        result: undefined,
         image: t.photo_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80",
         content: t.content,
         rating: t.rating || 5

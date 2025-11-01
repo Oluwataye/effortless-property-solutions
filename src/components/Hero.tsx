@@ -14,12 +14,9 @@ const Hero = () => {
         }}
       />
       
-      {/* Modern Gradient Overlay */}
+      {/* Lighter Gradient Overlay for Better Image Visibility */}
       <div 
-        className="absolute inset-0" 
-        style={{
-          background: "var(--gradient-hero)"
-        }}
+        className="absolute inset-0 bg-gradient-to-br from-primary/60 via-primary/50 to-accent/60"
       />
       
       {/* Decorative Elements */}
@@ -35,13 +32,13 @@ const Hero = () => {
           </p>
           
           {/* Main Heading */}
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 animate-slide-in leading-tight">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 animate-slide-in leading-tight drop-shadow-lg">
             AMOVATE
-            <span className="block text-secondary mt-2">SOLUTIONS</span>
+            <span className="block text-secondary mt-2 text-5xl md:text-7xl lg:text-8xl">SOLUTIONS</span>
           </h1>
           
           {/* Description */}
-          <p className="text-lg md:text-2xl text-white/90 mb-12 animate-slide-in max-w-3xl mx-auto leading-relaxed font-light">
+          <p className="text-lg md:text-2xl text-white mb-12 animate-slide-in max-w-3xl mx-auto leading-relaxed font-light drop-shadow-md">
             Transforming properties into exceptional living and working spaces through innovative management and development solutions.
           </p>
           
@@ -70,19 +67,19 @@ const Hero = () => {
             </Button>
           </div>
           
-          {/* Trust Indicators */}
-          <div className="grid grid-cols-3 gap-8 mt-16 pt-16 border-t border-white/20 max-w-2xl mx-auto animate-fade-in">
-            <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-secondary mb-2">500+</p>
-              <p className="text-white/80 text-sm">Properties Managed</p>
+          {/* Trust Indicators - Enhanced Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto animate-fade-in">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 text-center border border-white/20 hover:bg-white/15 transition-all hover:scale-105 shadow-lg">
+              <p className="text-4xl md:text-5xl font-bold text-secondary mb-2 drop-shadow-lg">500+</p>
+              <p className="text-white text-sm font-medium">Properties Managed</p>
             </div>
-            <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-secondary mb-2">15+</p>
-              <p className="text-white/80 text-sm">Years Experience</p>
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 text-center border border-white/20 hover:bg-white/15 transition-all hover:scale-105 shadow-lg">
+              <p className="text-4xl md:text-5xl font-bold text-secondary mb-2 drop-shadow-lg">15+</p>
+              <p className="text-white text-sm font-medium">Years of Excellence</p>
             </div>
-            <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-secondary mb-2">98%</p>
-              <p className="text-white/80 text-sm">Client Satisfaction</p>
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 text-center border border-white/20 hover:bg-white/15 transition-all hover:scale-105 shadow-lg">
+              <p className="text-4xl md:text-5xl font-bold text-secondary mb-2 drop-shadow-lg">98%</p>
+              <p className="text-white text-sm font-medium">Client Satisfaction</p>
             </div>
           </div>
         </div>

@@ -23,28 +23,17 @@ const Index = () => {
         
         <Services />
         
-        <HomeSection title="Featured Properties" className="bg-gradient-to-b from-white to-muted/30">
+        <HomeSection title="Featured Properties & Projects" className="bg-gradient-to-b from-white to-muted/30">
           <FeaturedProperties />
+          <div className="mt-16">
+            <ProjectsSection />
+          </div>
           <div className="text-center mt-12">
             <Button asChild size="lg" className="shadow-lg hover:shadow-xl transition-all">
               <Link to="/portfolio" className="group">
-                View All Properties <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                View All Projects <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
-          </div>
-        </HomeSection>
-
-        <HomeSection title="Featured Projects" background="dark" className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-accent opacity-95" />
-          <div className="relative z-10">
-            <ProjectsSection />
-            <div className="text-center mt-12">
-              <Button asChild size="lg" variant="outline" className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-primary shadow-gold transition-all">
-                <Link to="/portfolio" className="group">
-                  View All Projects <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
-            </div>
           </div>
         </HomeSection>
 
@@ -63,18 +52,25 @@ const Index = () => {
           </div>
         </HomeSection>
 
-        <HomeSection title="Get in Touch" background="dark" className="text-center relative overflow-hidden">
+        <HomeSection title="Ready to Elevate Your Property?" background="dark" className="text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary opacity-95" />
           <div className="relative z-10">
-            <p className="text-xl md:text-2xl mb-10 max-w-3xl mx-auto text-white/90 leading-relaxed">
-              Ready to transform your property management experience? Contact us today
-              to discuss how we can help you achieve your goals.
+            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-white leading-relaxed">
+              Transform your property management experience with our expert solutions. Get a free consultation today.
             </p>
-            <Button asChild size="lg" variant="outline" className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-primary shadow-gold transition-all">
-              <Link to="/contact" className="group">
-                Contact Us <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
+              <Button asChild size="lg" variant="premium">
+                <Link to="/contact" className="group">
+                  Get Free Assessment <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-primary">
+                <Link to="/services" className="group">
+                  Explore Services <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+            </div>
+            <p className="text-white/80 text-sm mt-6">No obligation • Free consultation • 24/7 Support</p>
           </div>
         </HomeSection>
 

@@ -12,6 +12,8 @@ interface TestimonialCarouselProps {
     image?: string;
     content: string;
     rating: number;
+    company?: string;
+    result?: string;
   }>;
 }
 
@@ -31,14 +33,19 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
   }
 
   return (
-    <div className="relative max-w-5xl mx-auto">
-      <div className="overflow-hidden rounded-2xl">
+    <div className="relative">
+      {/* Carousel Container - Show 1 on mobile, 2 on tablet, 3 on desktop */}
+      <div className="overflow-hidden">
         <div
-          className="flex transition-transform duration-700 ease-out"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          className="flex transition-transform duration-500 ease-in-out gap-4"
+          style={{ 
+            transform: `translateX(-${currentIndex * (100 / 3)}%)`,
+          }}
         >
           {testimonials.map((testimonial) => (
-            <TestimonialCard key={testimonial.id} testimonial={testimonial} />
+            <div key={testimonial.id} className="w-full md:w-1/2 lg:w-1/3 flex-shrink-0">
+              <TestimonialCard testimonial={testimonial} />
+            </div>
           ))}
         </div>
       </div>
@@ -48,7 +55,7 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
           <Button
             variant="outline"
             size="icon"
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 bg-card border-2 border-secondary text-secondary hover:bg-secondary hover:text-primary shadow-lg hover:shadow-gold transition-all"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 bg-card border-2 border-secondary text-secondary hover:bg-secondary hover:text-primary shadow-lg hover:shadow-gold transition-all z-10"
             onClick={prevTestimonial}
           >
             <ChevronLeft className="h-5 w-5" />
@@ -57,7 +64,7 @@ export function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) 
           <Button
             variant="outline"
             size="icon"
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 bg-card border-2 border-secondary text-secondary hover:bg-secondary hover:text-primary shadow-lg hover:shadow-gold transition-all"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 bg-card border-2 border-secondary text-secondary hover:bg-secondary hover:text-primary shadow-lg hover:shadow-gold transition-all z-10"
             onClick={nextTestimonial}
           >
             <ChevronRight className="h-5 w-5" />
