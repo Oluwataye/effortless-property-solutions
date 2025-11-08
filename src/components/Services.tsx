@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Building2, Home, Key, Construction, DollarSign } from "lucide-react";
-import ServiceSelector from "./ServiceSelector";
+import { Building2, Home, Key, Construction, DollarSign, ChevronDown } from "lucide-react";
 import ServiceDetails from "./ServiceDetails";
+import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Link } from "react-router-dom";
 
 const iconMap: Record<string, any> = {
   Building2,
@@ -121,15 +128,48 @@ const Services = () => {
             <br />
             <span className="text-primary">Help You Today?</span>
           </h2>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-10 font-light">I am looking for</p>
+          <p className="text-xl md:text-2xl text-muted-foreground mb-6 font-light">
+            Explore our comprehensive range of professional services
+          </p>
+          <p className="text-lg text-muted-foreground/80 mb-10 max-w-2xl mx-auto">
+            From property management to development consulting, we deliver excellence across all aspects of real estate services. Select a service below to learn more.
+          </p>
           
           {services && services.length > 0 && (
             <div className="animate-scale-in">
-              <ServiceSelector
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                services={services}
-              />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    className="w-full max-w-md mx-auto text-xl h-14 border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-all"
+                  >
+                    {selectedCategory || "Select a Service"}
+                    <ChevronDown className="ml-2 h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  className="w-[400px] max-w-[90vw] bg-background border-2 shadow-lg"
+                  align="center"
+                >
+                  {services.map((service) => (
+                    <DropdownMenuItem 
+                      key={service.category}
+                      asChild
+                      className="cursor-pointer"
+                    >
+                      <Link 
+                        to="/services"
+                        onClick={() => setSelectedCategory(service.category)}
+                        className="flex items-center gap-3 py-4 px-4 text-lg hover:bg-primary/5 transition-colors"
+                      >
+                        <service.icon className="h-6 w-6 text-primary" />
+                        <span className="font-medium">{service.category}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )}
         </div>
