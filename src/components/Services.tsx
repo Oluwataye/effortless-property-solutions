@@ -142,30 +142,39 @@ const Services = () => {
                   <Button 
                     variant="outline" 
                     size="lg"
-                    className="w-full max-w-md mx-auto text-xl h-14 border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-all"
+                    className="w-full max-w-md mx-auto text-xl h-14 border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-all bg-background"
                   >
                     {selectedCategory || "Select a Service"}
                     <ChevronDown className="ml-2 h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
-                  className="w-[400px] max-w-[90vw] bg-background border-2 shadow-lg"
+                  className="w-[400px] max-w-[90vw] bg-background border-2 shadow-xl z-50"
                   align="center"
+                  sideOffset={8}
                 >
                   {services.map((service) => (
                     <DropdownMenuItem 
                       key={service.category}
-                      asChild
-                      className="cursor-pointer"
+                      className="cursor-pointer focus:bg-primary/10 hover:bg-primary/10"
+                      onSelect={() => {
+                        setSelectedCategory(service.category);
+                        // Scroll to service details
+                        setTimeout(() => {
+                          const element = document.getElementById('service-details');
+                          if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }
+                        }, 100);
+                      }}
                     >
-                      <Link 
-                        to="/services"
-                        onClick={() => setSelectedCategory(service.category)}
-                        className="flex items-center gap-3 py-4 px-4 text-lg hover:bg-primary/5 transition-colors"
-                      >
-                        <service.icon className="h-6 w-6 text-primary" />
-                        <span className="font-medium">{service.category}</span>
-                      </Link>
+                      <div className="flex items-center gap-3 py-2 w-full">
+                        <service.icon className="h-6 w-6 text-primary flex-shrink-0" />
+                        <div className="flex flex-col items-start">
+                          <span className="font-medium text-lg text-foreground">{service.category}</span>
+                          <span className="text-sm text-muted-foreground line-clamp-1">{service.description}</span>
+                        </div>
+                      </div>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -175,7 +184,7 @@ const Services = () => {
         </div>
 
         {selectedCategory && services && (
-          <div className="animate-fade-in max-w-6xl mx-auto">
+          <div id="service-details" className="animate-fade-in max-w-6xl mx-auto">
             {services
               .filter(service => service.category === selectedCategory)
               .map((service) => (
