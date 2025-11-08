@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Building2, Home, Key, Construction, DollarSign, ChevronDown } from "lucide-react";
+import { Building2, Home, Key, Construction, DollarSign, ChevronDown, Search } from "lucide-react";
 import ServiceDetails from "./ServiceDetails";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,6 +57,7 @@ const defaultFeatures = {
 
 const Services = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const { data: services, isLoading } = useQuery({
     queryKey: ["services"],
@@ -137,7 +139,7 @@ const Services = () => {
           
           {services && services.length > 0 && (
             <div className="animate-scale-in">
-              <DropdownMenu>
+              <DropdownMenu onOpenChange={(open) => !open && setSearchQuery("")}>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="outline" 
@@ -153,30 +155,58 @@ const Services = () => {
                   align="center"
                   sideOffset={8}
                 >
-                  {services.map((service) => (
-                    <DropdownMenuItem 
-                      key={service.category}
-                      className="cursor-pointer focus:bg-primary/10 hover:bg-primary/10"
-                      onSelect={() => {
-                        setSelectedCategory(service.category);
-                        // Scroll to service details
-                        setTimeout(() => {
-                          const element = document.getElementById('service-details');
-                          if (element) {
-                            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                          }
-                        }, 100);
-                      }}
-                    >
-                      <div className="flex items-center gap-3 py-2 w-full">
-                        <service.icon className="h-6 w-6 text-primary flex-shrink-0" />
-                        <div className="flex flex-col items-start">
-                          <span className="font-medium text-lg text-foreground">{service.category}</span>
-                          <span className="text-sm text-muted-foreground line-clamp-1">{service.description}</span>
-                        </div>
+                  <div className="p-2 border-b border-border">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search services..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9 h-10"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
+                  </div>
+                  <div className="max-h-[300px] overflow-y-auto">
+                    {services
+                      .filter((service) => 
+                        service.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        service.description.toLowerCase().includes(searchQuery.toLowerCase())
+                      )
+                      .map((service) => (
+                        <DropdownMenuItem 
+                          key={service.category}
+                          className="cursor-pointer focus:bg-primary/10 hover:bg-primary/10"
+                          onSelect={() => {
+                            setSelectedCategory(service.category);
+                            setSearchQuery("");
+                            // Scroll to service details
+                            setTimeout(() => {
+                              const element = document.getElementById('service-details');
+                              if (element) {
+                                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }
+                            }, 100);
+                          }}
+                        >
+                          <div className="flex items-center gap-3 py-2 w-full">
+                            <service.icon className="h-6 w-6 text-primary flex-shrink-0" />
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium text-lg text-foreground">{service.category}</span>
+                              <span className="text-sm text-muted-foreground line-clamp-1">{service.description}</span>
+                            </div>
+                          </div>
+                        </DropdownMenuItem>
+                      ))}
+                    {services.filter((service) => 
+                      service.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      service.description.toLowerCase().includes(searchQuery.toLowerCase())
+                    ).length === 0 && (
+                      <div className="py-6 text-center text-sm text-muted-foreground">
+                        No services found
                       </div>
-                    </DropdownMenuItem>
-                  ))}
+                    )}
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
