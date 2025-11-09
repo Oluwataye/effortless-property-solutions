@@ -1,7 +1,7 @@
 
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import Services from "@/components/Services";
+import HomeServiceSelector from "@/components/HomeServiceSelector";
 import HomeSection from "@/components/HomeSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import NewsSection from "@/components/NewsSection";
@@ -21,7 +21,7 @@ const Index = () => {
         <Navbar />
         <Hero />
         
-        <Services />
+        <HomeServiceSelector />
         
         <HomeSection title="Featured Properties & Projects" className="bg-gradient-to-b from-white to-muted/30">
           <FeaturedProperties />

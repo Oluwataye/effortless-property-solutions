@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import ServicesComponent from "@/components/Services";
+import Footer from "@/components/Footer";
 import { Building2, Home, Key, Construction, DollarSign } from "lucide-react";
 
 const ServicesPage = () => {
@@ -64,8 +65,27 @@ const ServicesPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container mx-auto px-4 pt-24">
-        <h1 className="text-4xl font-bold text-primary mb-12 text-center">Our Services</h1>
+      
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 bg-gradient-to-b from-primary/10 via-secondary/5 to-background overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,hsl(var(--primary)/0.1),transparent_50%)]" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center animate-fade-in">
+            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
+              Our <span className="text-primary">Services</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 font-light leading-relaxed">
+              Comprehensive property solutions tailored to your needs
+            </p>
+            <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+          </div>
+        </div>
+      </section>
+      
+      <div className="container mx-auto px-4">
         <ServicesComponent />
         
         <div className="mt-20">
@@ -88,6 +108,8 @@ const ServicesPage = () => {
           ))}
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };
