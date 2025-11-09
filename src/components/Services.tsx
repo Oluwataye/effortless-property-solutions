@@ -136,9 +136,11 @@ const Services = () => {
                   <Button 
                     variant="ghost" 
                     size="lg"
-                    className="w-full max-w-md mx-auto text-xl h-14 border-b-2 border-foreground rounded-none hover:bg-transparent hover:border-primary transition-all bg-transparent font-light italic"
+                    className="w-full max-w-md mx-auto text-xl h-14 border-b-2 border-foreground rounded-none hover:bg-transparent hover:border-primary transition-all bg-transparent font-light italic animate-scale-in"
                   >
-                    {selectedCategory || "Select"}
+                    <span className={selectedCategory ? "animate-scale-in" : ""}>
+                      {selectedCategory || "Select"}
+                    </span>
                     <ChevronDown className="ml-2 h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
