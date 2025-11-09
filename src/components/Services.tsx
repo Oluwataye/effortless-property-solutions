@@ -122,19 +122,11 @@ const Services = () => {
       
       <div className="container mx-auto px-4 relative">
         <div className="max-w-4xl mx-auto text-center mb-20 animate-fade-in">
-          <div className="inline-block mb-6 px-6 py-2 bg-secondary/10 rounded-full animate-slide-down">
-            <span className="text-secondary font-semibold text-sm tracking-wider uppercase">Our Services</span>
-          </div>
-          <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-8 leading-tight animate-slide-in">
-            How Can We
-            <br />
-            <span className="text-primary">Help You Today?</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-muted-foreground mb-12 leading-tight tracking-wide uppercase">
+            How Can We Help You Today?
           </h2>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-6 font-light">
-            Explore our comprehensive range of professional services
-          </p>
-          <p className="text-lg text-muted-foreground/80 mb-10 max-w-2xl mx-auto">
-            From property management to development consulting, we deliver excellence across all aspects of real estate services. Select a service below to learn more.
+          <p className="text-xl md:text-2xl text-muted-foreground mb-8 font-light">
+            I am looking for
           </p>
           
           {services && services.length > 0 && (
@@ -142,11 +134,11 @@ const Services = () => {
               <DropdownMenu onOpenChange={(open) => !open && setSearchQuery("")}>
                 <DropdownMenuTrigger asChild>
                   <Button 
-                    variant="outline" 
+                    variant="ghost" 
                     size="lg"
-                    className="w-full max-w-md mx-auto text-xl h-14 border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-all bg-background"
+                    className="w-full max-w-md mx-auto text-xl h-14 border-b-2 border-foreground rounded-none hover:bg-transparent hover:border-primary transition-all bg-transparent font-light italic"
                   >
-                    {selectedCategory || "Select a Service"}
+                    {selectedCategory || "Select"}
                     <ChevronDown className="ml-2 h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
