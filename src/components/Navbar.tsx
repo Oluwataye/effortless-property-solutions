@@ -1,19 +1,13 @@
 import { useState } from "react";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X, Search, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import ServicesMegaMenu from "./ServicesMegaMenu";
+import { mainNavigation } from "@/data/navigationData";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
-
-  const navItems = [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Services", path: "/services" },
-    { name: "Projects", path: "/portfolio" },
-    { name: "Contact", path: "/contact" },
-  ];
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -30,19 +24,26 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`${
-                  isActive(item.path)
-                    ? "text-primary bg-accent/10"
-                    : "text-muted-foreground hover:text-primary hover:bg-accent/5"
-                } px-4 py-2 rounded-lg transition-all duration-200 font-medium`}
-              >
-                <span>{item.name}</span>
-              </Link>
-            ))}
+            {mainNavigation.map((item) => {
+              // Special handling for Services with mega menu
+              if (item.hasMegaMenu && item.label === "Services") {
+                return <ServicesMegaMenu key={item.label} />;
+              }
+
+              return (
+                <Link
+                  key={item.label}
+                  to={item.href || "#"}
+                  className={`${
+                    isActive(item.href || "#")
+                      ? "text-primary bg-accent/10"
+                      : "text-muted-foreground hover:text-primary hover:bg-accent/5"
+                  } px-4 py-2 rounded-lg transition-all duration-200 font-medium inline-flex items-center gap-1`}
+                >
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
             
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -79,20 +80,50 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden pb-4 animate-slide-down border-t border-border mt-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`block py-3 px-4 my-1 rounded-lg ${
-                  isActive(item.path)
-                    ? "text-primary bg-accent/10 font-semibold"
-                    : "text-muted-foreground hover:text-primary hover:bg-accent/5"
-                } transition-all duration-200`}
-                onClick={() => setIsOpen(false)}
-              >
-                <span>{item.name}</span>
-              </Link>
-            ))}
+            {mainNavigation.map((item) => {
+              if (item.hasMegaMenu && item.columns) {
+                // Mobile accordion for services
+                return (
+                  <div key={item.label} className="my-1">
+                    <div className="py-3 px-4 text-muted-foreground font-medium">
+                      {item.label}
+                    </div>
+                    {item.columns.map((column) => (
+                      <div key={column.title} className="pl-4">
+                        <div className="text-xs font-semibold text-muted-foreground py-2 px-4">
+                          {column.title}
+                        </div>
+                        {column.links.map((link) => (
+                          <Link
+                            key={link.href}
+                            to={link.href}
+                            className="block py-2 px-4 text-sm text-muted-foreground hover:text-primary hover:bg-accent/5 rounded-lg transition-all"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            {link.label}
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.label}
+                  to={item.href || "#"}
+                  className={`block py-3 px-4 my-1 rounded-lg ${
+                    isActive(item.href || "#")
+                      ? "text-primary bg-accent/10 font-semibold"
+                      : "text-muted-foreground hover:text-primary hover:bg-accent/5"
+                  } transition-all duration-200`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
