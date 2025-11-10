@@ -17,6 +17,11 @@ import Portfolio from "./pages/Portfolio";
 import Blog from "./pages/Blog";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/admin/Dashboard";
+import FacilityManagement from "./pages/services/FacilityManagement";
+import RealEstateManagement from "./pages/services/RealEstateManagement";
+import PropertyBuying from "./pages/services/PropertyBuying";
+import PropertyDevelopment from "./pages/services/PropertyDevelopment";
+import PropertySelling from "./pages/services/PropertySelling";
 import Properties from "./pages/admin/Properties";
 import Projects from "./pages/admin/Projects";
 import News from "./pages/admin/News";
@@ -54,6 +59,11 @@ function AppContent() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/services/facility-management" element={<FacilityManagement />} />
+          <Route path="/services/real-estate-management" element={<RealEstateManagement />} />
+          <Route path="/services/property-buying" element={<PropertyBuying />} />
+          <Route path="/services/property-development" element={<PropertyDevelopment />} />
+          <Route path="/services/property-selling" element={<PropertySelling />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/blog" element={<Blog />} />
           <Route 
