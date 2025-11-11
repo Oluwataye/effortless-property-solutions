@@ -23,8 +23,8 @@ const ServicesMegaMenu = () => {
             Services
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="w-[800px] p-6">
-              <div className="grid grid-cols-3 gap-8">
+            <div className="w-[90vw] max-w-[1200px] p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {servicesItem.columns.map((column) => (
                   <div key={column.title} className="space-y-4">
                     <h3 className="text-sm font-semibold tracking-wider text-muted-foreground">
