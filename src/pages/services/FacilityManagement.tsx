@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import ServiceBreadcrumb from "@/components/ServiceBreadcrumb";
+import ServiceHero from "@/components/ServiceHero";
+import heroImage from "/images/services/facility-management-hero.png";
 
 const FacilityManagement = () => {
   const features = [
@@ -38,33 +41,15 @@ const FacilityManagement = () => {
       />
       
       <div className="min-h-screen pt-20">
-        {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-primary/10 via-background to-accent/10 py-20">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center space-y-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-                <Building2 className="w-8 h-8 text-primary" />
-              </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
-                Facility Management
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Comprehensive facility management solutions that optimize operations, reduce costs, and enhance the performance of your properties.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-                <Button asChild size="lg">
-                  <Link to="/contact">
-                    Get Started
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg">
-                  <Link to="/portfolio">View Our Projects</Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
+        <ServiceBreadcrumb serviceName="Facility Management" />
+        
+        <ServiceHero
+          title="Facility Management"
+          category="Professional Services"
+          description="Comprehensive facility management solutions that optimize operations, reduce costs, and enhance the performance of your properties."
+          backgroundImage={heroImage}
+          icon={Building2}
+        />
 
         {/* Features Section */}
         <section className="py-16 bg-background">
