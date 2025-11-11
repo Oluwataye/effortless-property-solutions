@@ -1,7 +1,10 @@
+import { LucideIcon } from "lucide-react";
+
 export interface NavigationLink {
   label: string;
   href: string;
   description?: string;
+  icon?: LucideIcon;
 }
 
 export interface NavigationColumn {
@@ -15,6 +18,22 @@ export interface NavigationItem {
   hasMegaMenu?: boolean;
   columns?: NavigationColumn[];
 }
+
+import {
+  Building2,
+  Home,
+  ShoppingCart,
+  Hammer,
+  TrendingUp,
+  Building,
+  HomeIcon,
+  Factory,
+  Hospital,
+  FileText,
+  Newspaper,
+  BookOpen,
+  Briefcase,
+} from "lucide-react";
 
 // Main navigation items
 export const mainNavigation: NavigationItem[] = [
@@ -38,26 +57,31 @@ export const mainNavigation: NavigationItem[] = [
             label: "Facility Management",
             href: "/services/facility-management",
             description: "Comprehensive facility management solutions",
+            icon: Building2,
           },
           {
             label: "Real Estate Management",
             href: "/services/real-estate-management",
             description: "Professional property management services",
+            icon: Home,
           },
           {
             label: "Property Buying",
             href: "/services/property-buying",
             description: "Expert guidance for property acquisition",
+            icon: ShoppingCart,
           },
           {
             label: "Property Development",
             href: "/services/property-development",
             description: "End-to-end development solutions",
+            icon: Hammer,
           },
           {
             label: "Property Selling",
             href: "/services/property-selling",
             description: "Maximize your property value",
+            icon: TrendingUp,
           },
         ],
       },
@@ -68,21 +92,25 @@ export const mainNavigation: NavigationItem[] = [
             label: "Commercial",
             href: "/industries/commercial",
             description: "Office and retail spaces",
+            icon: Building,
           },
           {
             label: "Residential",
             href: "/industries/residential",
             description: "Housing and apartments",
+            icon: HomeIcon,
           },
           {
             label: "Industrial",
             href: "/industries/industrial",
             description: "Warehouses and factories",
+            icon: Factory,
           },
           {
             label: "Healthcare",
             href: "/industries/healthcare",
             description: "Medical facilities",
+            icon: Hospital,
           },
         ],
       },
@@ -93,21 +121,25 @@ export const mainNavigation: NavigationItem[] = [
             label: "Case Studies",
             href: "/resources/case-studies",
             description: "Success stories",
+            icon: FileText,
           },
           {
             label: "Blog",
             href: "/blog",
             description: "Industry insights",
+            icon: BookOpen,
           },
           {
             label: "News",
             href: "/resources/news",
             description: "Latest updates",
+            icon: Newspaper,
           },
           {
             label: "Portfolio",
             href: "/portfolio",
             description: "Our projects",
+            icon: Briefcase,
           },
         ],
       },

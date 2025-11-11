@@ -31,31 +31,41 @@ const ServicesMegaMenu = () => {
                       {column.title}
                     </h3>
                     <ul className="space-y-3">
-                      {column.links.map((link) => (
-                        <li key={link.href}>
-                          <NavigationMenuLink asChild>
-                            <Link
-                              to={link.href}
-                              className={cn(
-                                "block group rounded-md p-3 transition-all duration-200",
-                                "hover:bg-accent hover:shadow-sm",
-                                "focus:outline-none focus:ring-2 focus:ring-ring"
-                              )}
-                            >
-                              <div className="space-y-1">
-                                <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">
-                                  {link.label}
-                                </p>
-                                {link.description && (
-                                  <p className="text-xs text-muted-foreground line-clamp-2">
-                                    {link.description}
-                                  </p>
+                      {column.links.map((link) => {
+                        const IconComponent = link.icon;
+                        return (
+                          <li key={link.href}>
+                            <NavigationMenuLink asChild>
+                              <Link
+                                to={link.href}
+                                className={cn(
+                                  "block group rounded-md p-3 transition-all duration-200",
+                                  "hover:bg-accent hover:shadow-sm",
+                                  "focus:outline-none focus:ring-2 focus:ring-ring"
                                 )}
-                              </div>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      ))}
+                              >
+                                <div className="flex items-start gap-3">
+                                  {IconComponent && (
+                                    <div className="mt-0.5 rounded-md bg-primary/10 p-2 group-hover:bg-primary/20 transition-colors">
+                                      <IconComponent className="h-4 w-4 text-primary" />
+                                    </div>
+                                  )}
+                                  <div className="space-y-1 flex-1">
+                                    <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">
+                                      {link.label}
+                                    </p>
+                                    {link.description && (
+                                      <p className="text-xs text-muted-foreground line-clamp-2">
+                                        {link.description}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </Link>
+                            </NavigationMenuLink>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 ))}

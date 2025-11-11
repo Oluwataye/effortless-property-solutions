@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X, Search, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import ServicesMegaMenu from "./ServicesMegaMenu";
@@ -7,12 +7,28 @@ import { mainNavigation } from "@/data/navigationData";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed w-full bg-white/95 backdrop-blur-md shadow-lg z-50 transition-all duration-300">
+    <nav
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-background/95 backdrop-blur-md shadow-lg"
+          : "bg-background/80 backdrop-blur-sm shadow-md"
+      }`}
+    >
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center group">
@@ -66,12 +82,12 @@ const Navbar = () => {
 
         {/* Search Bar */}
         {isSearchOpen && (
-          <div className="absolute top-20 left-0 w-full bg-white/95 backdrop-blur-md shadow-xl p-6 animate-slide-down border-t border-border">
+          <div className="absolute top-20 left-0 w-full bg-background/95 backdrop-blur-md shadow-xl p-6 animate-fade-in border-t border-border">
             <div className="container mx-auto">
               <input
                 type="search"
                 placeholder="Search properties, services..."
-                className="w-full p-4 border-2 border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                className="w-full p-4 border-2 border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground"
               />
             </div>
           </div>
@@ -79,7 +95,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden pb-4 animate-slide-down border-t border-border mt-2">
+          <div className="md:hidden pb-4 animate-fade-in border-t border-border mt-2">
             {mainNavigation.map((item) => {
               if (item.hasMegaMenu && item.columns) {
                 // Mobile accordion for services
