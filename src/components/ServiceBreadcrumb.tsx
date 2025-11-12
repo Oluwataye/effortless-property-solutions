@@ -10,9 +10,15 @@ import {
 
 interface ServiceBreadcrumbProps {
   serviceName: string;
+  parentPath?: string;
+  parentLabel?: string;
 }
 
-const ServiceBreadcrumb = ({ serviceName }: ServiceBreadcrumbProps) => {
+const ServiceBreadcrumb = ({ 
+  serviceName, 
+  parentPath = "/services",
+  parentLabel = "Services" 
+}: ServiceBreadcrumbProps) => {
   return (
     <div className="bg-background/95 backdrop-blur-sm border-b">
       <div className="container mx-auto px-4 py-4">
@@ -26,7 +32,7 @@ const ServiceBreadcrumb = ({ serviceName }: ServiceBreadcrumbProps) => {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link to="/services">Services</Link>
+                <Link to={parentPath}>{parentLabel}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

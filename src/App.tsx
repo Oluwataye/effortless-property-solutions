@@ -22,6 +22,12 @@ import RealEstateManagement from "./pages/services/RealEstateManagement";
 import PropertyBuying from "./pages/services/PropertyBuying";
 import PropertyDevelopment from "./pages/services/PropertyDevelopment";
 import PropertySelling from "./pages/services/PropertySelling";
+import Sustainability from "./pages/about/Sustainability";
+import Leadership from "./pages/about/Leadership";
+import Impact from "./pages/about/Impact";
+import History from "./pages/about/History";
+import Careers from "./pages/Careers";
+import Locations from "./pages/Locations";
 import Properties from "./pages/admin/Properties";
 import Projects from "./pages/admin/Projects";
 import News from "./pages/admin/News";
@@ -57,6 +63,12 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
+          <Route path="/about/sustainability" element={<Sustainability />} />
+          <Route path="/about/leadership" element={<Leadership />} />
+          <Route path="/about/impact" element={<Impact />} />
+          <Route path="/about/history" element={<History />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/locations" element={<Locations />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/services" element={<Services />} />
           <Route path="/services/facility-management" element={<FacilityManagement />} />
