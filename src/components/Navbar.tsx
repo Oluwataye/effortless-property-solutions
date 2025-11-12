@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, Search, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import ServicesMegaMenu from "./ServicesMegaMenu";
+import AboutMegaMenu from "./AboutMegaMenu";
 import { mainNavigation } from "@/data/navigationData";
 
 const Navbar = () => {
@@ -39,25 +40,54 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center divide-x divide-border/30">
             {mainNavigation.map((item) => {
               // Special handling for Services with mega menu
               if (item.hasMegaMenu && item.label === "Services") {
-                return <ServicesMegaMenu key={item.label} />;
+                return (
+                  <div key={item.label} className="px-4 first:pl-0">
+                    <ServicesMegaMenu />
+                  </div>
+                );
               }
 
+              // Special handling for About with mega menu
+              if (item.hasMegaMenu && item.label === "About") {
+                return (
+                  <div key={item.label} className="px-4">
+                    <AboutMegaMenu />
+                  </div>
+                );
+              }
+
+              // Special handling for Contact button
+              if (item.label === "Contact") {
+                return (
+                  <div key={item.label} className="pl-4">
+                    <Link
+                      to={item.href || "#"}
+                      className="px-6 py-2.5 bg-[hsl(230,70%,30%)] hover:bg-[hsl(230,80%,20%)] text-white font-semibold rounded transition-all duration-200 inline-block"
+                    >
+                      {item.label.toUpperCase()}
+                    </Link>
+                  </div>
+                );
+              }
+
+              // Regular navigation items
               return (
-                <Link
-                  key={item.label}
-                  to={item.href || "#"}
-                  className={`${
-                    isActive(item.href || "#")
-                      ? "text-primary bg-accent/10"
-                      : "text-muted-foreground hover:text-primary hover:bg-accent/5"
-                  } px-4 py-2 rounded-lg transition-all duration-200 font-medium inline-flex items-center gap-1`}
-                >
-                  <span>{item.label}</span>
-                </Link>
+                <div key={item.label} className="px-4">
+                  <Link
+                    to={item.href || "#"}
+                    className={`${
+                      isActive(item.href || "#")
+                        ? "text-primary"
+                        : "text-muted-foreground hover:text-primary"
+                    } py-2 transition-all duration-200 font-medium inline-flex items-center gap-1`}
+                  >
+                    <span>{item.label}</span>
+                  </Link>
+                </div>
               );
             })}
             
@@ -98,7 +128,7 @@ const Navbar = () => {
           <div className="md:hidden pb-4 animate-fade-in border-t border-border mt-2">
             {mainNavigation.map((item) => {
               if (item.hasMegaMenu && item.columns) {
-                // Mobile accordion for services
+                // Mobile accordion for mega menus (Services, About)
                 return (
                   <div key={item.label} className="my-1">
                     <div className="py-3 px-4 text-muted-foreground font-medium">
@@ -122,6 +152,20 @@ const Navbar = () => {
                       </div>
                     ))}
                   </div>
+                );
+              }
+
+              // Special handling for Contact button on mobile
+              if (item.label === "Contact") {
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.href || "#"}
+                    className="block mx-4 my-2 px-6 py-3 bg-[hsl(230,70%,30%)] hover:bg-[hsl(230,80%,20%)] text-white font-semibold rounded text-center transition-all duration-200"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.label.toUpperCase()}
+                  </Link>
                 );
               }
 

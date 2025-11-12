@@ -33,6 +33,11 @@ import {
   Newspaper,
   BookOpen,
   Briefcase,
+  Lightbulb,
+  Users,
+  Heart,
+  History,
+  MapPin,
 } from "lucide-react";
 
 // Main navigation items
@@ -44,6 +49,60 @@ export const mainNavigation: NavigationItem[] = [
   {
     label: "About",
     href: "/about",
+    hasMegaMenu: true,
+    columns: [
+      {
+        title: "CAREERS",
+        links: [
+          {
+            label: "Work With Us",
+            href: "/careers",
+            description: "Join our team",
+            icon: Briefcase,
+          },
+        ],
+      },
+      {
+        title: "ABOUT US",
+        links: [
+          {
+            label: "Sustainability",
+            href: "/about/sustainability",
+            description: "Our commitment to the environment",
+            icon: Lightbulb,
+          },
+          {
+            label: "Global Leadership",
+            href: "/about/leadership",
+            description: "Meet our leadership team",
+            icon: Users,
+          },
+          {
+            label: "Inclusive Impact",
+            href: "/about/impact",
+            description: "Diversity and inclusion",
+            icon: Heart,
+          },
+          {
+            label: "Our History",
+            href: "/about/history",
+            description: "Our journey and milestones",
+            icon: History,
+          },
+        ],
+      },
+      {
+        title: "OFFICE LOCATIONS",
+        links: [
+          {
+            label: "Find Us",
+            href: "/locations",
+            description: "Our global offices",
+            icon: MapPin,
+          },
+        ],
+      },
+    ],
   },
   {
     label: "Services",
