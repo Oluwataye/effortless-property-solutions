@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import ServiceBreadcrumb from "@/components/ServiceBreadcrumb";
 import ServiceHero from "@/components/ServiceHero";
+import Timeline from "@/components/Timeline";
 import heroImage from "/images/about/history-hero.png";
 
 const History = () => {
@@ -50,6 +51,21 @@ const History = () => {
           backgroundImage={heroImage}
           icon={HistoryIcon}
         />
+
+        {/* Timeline Section */}
+        <section className="py-16 bg-accent/5">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+                Our Journey Through Time
+              </h2>
+              <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto">
+                Explore the key milestones that have shaped AMOVATE into the industry leader we are today.
+              </p>
+              <Timeline />
+            </div>
+          </div>
+        </section>
 
         {/* Milestones Section */}
         <section className="py-16 bg-background">

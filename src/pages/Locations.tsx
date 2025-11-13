@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import ServiceBreadcrumb from "@/components/ServiceBreadcrumb";
 import ServiceHero from "@/components/ServiceHero";
+import InteractiveMap from "@/components/InteractiveMap";
 import heroImage from "/images/about/locations-hero.png";
 
 const Locations = () => {
@@ -50,6 +51,21 @@ const Locations = () => {
           backgroundImage={heroImage}
           icon={MapPin}
         />
+
+        {/* Interactive Map Section */}
+        <section className="py-16 bg-accent/5">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+                Interactive Office Map
+              </h2>
+              <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+                Explore our global presence. Click on any marker to view detailed information about each office location.
+              </p>
+              <InteractiveMap />
+            </div>
+          </div>
+        </section>
 
         {/* Regions Section */}
         <section className="py-16 bg-background">
