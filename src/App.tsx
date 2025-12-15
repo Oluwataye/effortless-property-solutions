@@ -28,6 +28,11 @@ import Impact from "./pages/about/Impact";
 import History from "./pages/about/History";
 import Careers from "./pages/Careers";
 import Locations from "./pages/Locations";
+import Resources from "./pages/Resources";
+import Commercial from "./pages/industries/Commercial";
+import Residential from "./pages/industries/Residential";
+import Industrial from "./pages/industries/Industrial";
+import Healthcare from "./pages/industries/Healthcare";
 import Properties from "./pages/admin/Properties";
 import Projects from "./pages/admin/Projects";
 import News from "./pages/admin/News";
@@ -77,6 +82,11 @@ function AppContent() {
           <Route path="/services/property-development" element={<PropertyDevelopment />} />
           <Route path="/services/property-selling" element={<PropertySelling />} />
           <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/industries/commercial" element={<Commercial />} />
+          <Route path="/industries/residential" element={<Residential />} />
+          <Route path="/industries/industrial" element={<Industrial />} />
+          <Route path="/industries/healthcare" element={<Healthcare />} />
           <Route path="/blog" element={<Blog />} />
           <Route 
             path="/auth" 
