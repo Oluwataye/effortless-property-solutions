@@ -144,13 +144,6 @@ export const mainNavigation: NavigationItem[] = [
           },
         ],
       },
-    ],
-  },
-  {
-    label: "Industries",
-    href: "/industries",
-    hasMegaMenu: true,
-    columns: [
       {
         title: "INDUSTRIES",
         links: [
@@ -185,9 +178,27 @@ export const mainNavigation: NavigationItem[] = [
         links: [
           {
             label: "Case Studies",
-            href: "/resources",
+            href: "/resources/case-studies",
             description: "Success stories",
             icon: FileText,
+          },
+          {
+            label: "Blog",
+            href: "/blog",
+            description: "Industry insights",
+            icon: BookOpen,
+          },
+          {
+            label: "News",
+            href: "/resources/news",
+            description: "Latest updates",
+            icon: Newspaper,
+          },
+          {
+            label: "Portfolio",
+            href: "/portfolio",
+            description: "Our projects",
+            icon: Briefcase,
           },
         ],
       },

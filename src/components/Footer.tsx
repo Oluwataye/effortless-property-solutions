@@ -66,7 +66,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links & Industries */}
+          {/* Quick Links & Services Combined */}
           <div>
             <h4 className="text-xl font-semibold mb-6 text-secondary">Quick Links</h4>
             <ul className="space-y-3">
@@ -86,8 +86,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/resources" className="text-white/90 hover:text-secondary transition-colors text-base hover:translate-x-1 inline-block">
-                  Case Studies
+                <Link to="/blog" className="text-white/90 hover:text-secondary transition-colors text-base hover:translate-x-1 inline-block">
+                  News & Insights
                 </Link>
               </li>
               <li>
@@ -97,28 +97,12 @@ const Footer = () => {
               </li>
             </ul>
             
-            <h4 className="text-xl font-semibold mb-4 mt-8 text-secondary">Industries</h4>
+            <h4 className="text-xl font-semibold mb-4 mt-8 text-secondary">Services</h4>
             <ul className="space-y-2 text-white/80 text-sm">
-              <li>
-                <Link to="/industries/commercial" className="hover:text-secondary transition-colors">
-                  • Commercial
-                </Link>
-              </li>
-              <li>
-                <Link to="/industries/residential" className="hover:text-secondary transition-colors">
-                  • Residential
-                </Link>
-              </li>
-              <li>
-                <Link to="/industries/industrial" className="hover:text-secondary transition-colors">
-                  • Industrial
-                </Link>
-              </li>
-              <li>
-                <Link to="/industries/healthcare" className="hover:text-secondary transition-colors">
-                  • Healthcare
-                </Link>
-              </li>
+              <li>• Property Management</li>
+              <li>• Real Estate Development</li>
+              <li>• Facility Management</li>
+              <li>• Property Maintenance</li>
             </ul>
           </div>
 

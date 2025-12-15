@@ -3,7 +3,6 @@ import { Menu, X, Search, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import ServicesMegaMenu from "./ServicesMegaMenu";
 import AboutMegaMenu from "./AboutMegaMenu";
-import IndustriesMegaMenu from "./IndustriesMegaMenu";
 import { mainNavigation } from "@/data/navigationData";
 
 const Navbar = () => {
@@ -57,15 +56,6 @@ const Navbar = () => {
                 return (
                   <div key={item.label} className="px-4">
                     <AboutMegaMenu />
-                  </div>
-                );
-              }
-
-              // Special handling for Industries with mega menu
-              if (item.hasMegaMenu && item.label === "Industries") {
-                return (
-                  <div key={item.label} className="px-4">
-                    <IndustriesMegaMenu />
                   </div>
                 );
               }
